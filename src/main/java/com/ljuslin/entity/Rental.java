@@ -38,11 +38,10 @@ public class Rental {
     private LocalDate returnDate;
     protected Rental() {}
 
-    public Rental(Member member, long itemId, RentalType rentalType, LocalDate rentalDate) {
+    public Rental(Member member, long itemId, RentalType rentalType) {
         this.member = member;
         this.itemId = itemId;
         this.rentalType = rentalType;
-        this.rentalDate = rentalDate;
     }
 
     public Long getRentalId() {

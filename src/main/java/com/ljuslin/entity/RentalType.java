@@ -3,7 +3,7 @@ package com.ljuslin.entity;
 public enum RentalType {
     TIE("Slips"),
     BOWTIE("Fluga"),
-    TIECLIP("Slipsnål");
+    POCKET_SQUARE("Näsduk");
 
     private final String swedishName;
 

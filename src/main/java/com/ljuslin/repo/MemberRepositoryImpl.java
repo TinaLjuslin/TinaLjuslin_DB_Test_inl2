@@ -1,5 +1,6 @@
 package com.ljuslin.repo;
 
+import com.ljuslin.entity.Level;
 import com.ljuslin.entity.Member;
 import com.ljuslin.exception.DatabaseException;
 import com.ljuslin.util.HibernateUtil;
@@ -73,6 +74,30 @@ public class MemberRepositoryImpl implements MemberRepository {
             return session.createQuery("FROM Member WHERE email = :email", Member.class)
                     .setParameter("email", email)
                     .uniqueResultOptional();
+        }
+    }
+    @Override
+    public List<Member> search(String firstName, String lastName, String email, Level level) {
+        try (Session session = sessionFactory.openSession()) {
+            StringBuilder hql = new StringBuilder("FROM Member WHERE 1=1"); // 1=1 är ett trick för att kunna lägga till "AND" enkelt
+
+            if (firstName != null && !firstName.isBlank())
+                hql.append(" AND firstName LIKE :firstName");
+            if (lastName != null && !lastName.isBlank()) hql.append(" AND lastName LIKE :lastName");
+            if (email != null && !email.isBlank()) hql.append(" AND email LIKE :email");
+            if (level != null) hql.append(" AND level = :level");
+            hql.append("AND active = true");
+            var query = session.createQuery(hql.toString(), Member.class);
+            if (firstName != null && !firstName.isBlank())
+                query.setParameter("firstName", "%" + firstName + "%");
+            if (lastName != null && !lastName.isBlank())
+                query.setParameter("lastName", "%" + lastName + "%");
+            if (email != null && !email.isBlank()) query.setParameter("email", "%" + email + "%");
+            if (level != null) query.setParameter("level", level);
+
+            return query.list();
+        } catch(Exception e) {
+            throw new DatabaseException("Fel vid sökning av medlemmar.");
         }
     }
 }

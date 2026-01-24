@@ -20,9 +20,10 @@ public class Main {
         PocketSquareRepositoryImpl pocketSquareRepository = new PocketSquareRepositoryImpl(sessionFactory);
         RentalRepositoryImpl rentalRepository = new RentalRepositoryImpl(sessionFactory);
         TieRepositoryImpl tieRepository = new TieRepositoryImpl(sessionFactory);
+        HistoryRepositoryImpl historyRepository = new HistoryRepositoryImpl(sessionFactory);
 
         ItemService itemService = new ItemService(bowtieRepository, pocketSquareRepository, tieRepository);
-        MemberService memberService = new MemberService(memberRepository);
+        MemberService memberService = new MemberService(memberRepository, historyRepository);
         RentalService rentalService = new RentalService(rentalRepository);
 
 

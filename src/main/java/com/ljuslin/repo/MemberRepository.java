@@ -1,5 +1,6 @@
 package com.ljuslin.repo;
 
+import com.ljuslin.entity.Level;
 import com.ljuslin.entity.Member;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface MemberRepository {
     Optional getById(Long id);
     void save(Member member);
     void change(Member member);
-    boolean checkUniqueEmail(Member member);
     //delete får skötas i servicelagret, sätt active till false och köp update
     Optional<Member> findByEmail(String email);
+    List<Member> search(String firstName, String lastName, String email, Level level);
 }

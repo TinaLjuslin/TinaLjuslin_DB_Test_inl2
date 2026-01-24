@@ -34,9 +34,10 @@ public class Member {
 
     }
 
-    public Member(String firstName, String lastName, Level level) {
+    public Member(String firstName, String lastName, String email, Level level) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.level = level;
     }
 

@@ -1,9 +1,8 @@
 package com.ljuslin.repo;
 
-import com.ljuslin.entity.Member;
 import com.ljuslin.entity.Rental;
 import com.ljuslin.exception.DatabaseException;
-import com.ljuslin.util.HibernateUtil;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
