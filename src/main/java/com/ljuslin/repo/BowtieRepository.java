@@ -14,5 +14,6 @@ public interface BowtieRepository {
     //delete får skötas i servicelagret, sätt active till false och köp update
     //void delete(Bowtie bowtie);
     List<Bowtie> getByMaterial(Material material);
+    List<Bowtie> search(String searchText);
 
 }

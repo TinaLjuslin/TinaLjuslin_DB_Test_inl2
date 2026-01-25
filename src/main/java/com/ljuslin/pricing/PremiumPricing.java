@@ -1,5 +1,8 @@
 package com.ljuslin.pricing;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Pricing methods for level premium
  *
@@ -12,12 +15,21 @@ public class PremiumPricing implements PricePolicy {
     public PremiumPricing() {
     }
 
-    public double getPricePerDay(double price) {
-        return price * (100 - DISCOUNT_PERCENTAGE) / 100.0;
+    public BigDecimal getPricePerDay(BigDecimal price) {
+        BigDecimal discountFactor = BigDecimal.valueOf(100 - DISCOUNT_PERCENTAGE);
+        BigDecimal divisor = BigDecimal.valueOf(100);
+
+        return price.multiply(discountFactor)
+                .divide(divisor, 2, RoundingMode.HALF_UP);
     }
 
-    public double getTotalPrice(double price, int days) {
-        return price * (100 - DISCOUNT_PERCENTAGE) / 100 * days;
-    }
+    public BigDecimal getTotalPrice(BigDecimal price, int days) {
+        BigDecimal daysBD = BigDecimal.valueOf(days);
+        BigDecimal discountFactor = BigDecimal.valueOf(100 - DISCOUNT_PERCENTAGE);
+        BigDecimal divisor = BigDecimal.valueOf(100);
+
+        return price.multiply(daysBD)
+                .multiply(discountFactor)
+                .divide(divisor, 2, RoundingMode.HALF_UP);    }
 
 }

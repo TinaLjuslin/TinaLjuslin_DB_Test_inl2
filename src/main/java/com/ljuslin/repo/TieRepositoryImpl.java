@@ -1,5 +1,6 @@
 package com.ljuslin.repo;
 
+import com.ljuslin.entity.Bowtie;
 import com.ljuslin.entity.Material;
 import com.ljuslin.entity.Tie;
 import com.ljuslin.exception.DatabaseException;
@@ -80,6 +81,21 @@ public class TieRepositoryImpl implements TieRepository {
                     .list();
         }catch(Exception e){
             throw new DatabaseException("Fel vid hämtning av slipsar");
+        }
+    }
+
+    public List<Tie> search(String searchText) {
+        try (Session session = sessionFactory.openSession()) {
+            StringBuilder hql = new StringBuilder("FROM Tie WHERE active = true");
+            hql.append(" AND (color LIKE :searchText"
+                    + " OR CAST(pricePerDay as string) LIKE :searchText"
+                    + " OR CAST(material as string) LIKE :searchText)"
+            );
+            var query = session.createQuery(hql.toString(), Tie.class);
+            query.setParameter("searchText", "%" + searchText + "%");
+            return query.list();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid sökning av slipsar.");
         }
     }
 }

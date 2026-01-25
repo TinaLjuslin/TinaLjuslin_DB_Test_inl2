@@ -13,5 +13,5 @@ public interface MemberRepository {
     void change(Member member);
     //delete får skötas i servicelagret, sätt active till false och köp update
     Optional<Member> findByEmail(String email);
-    List<Member> search(String firstName, String lastName, String email, Level level);
+    List<Member> search(String searchText);
 }

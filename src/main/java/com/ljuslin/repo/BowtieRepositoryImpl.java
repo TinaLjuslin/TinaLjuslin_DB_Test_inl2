@@ -2,6 +2,7 @@ package com.ljuslin.repo;
 
 import com.ljuslin.entity.Bowtie;
 import com.ljuslin.entity.Material;
+import com.ljuslin.entity.Member;
 import com.ljuslin.exception.DatabaseException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,30 +17,33 @@ public class BowtieRepositoryImpl implements BowtieRepository {
     public BowtieRepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+
     @Override
-    public List<Bowtie> getAll(){
+    public List<Bowtie> getAll() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("FROM Bowtie WHERE active = true", Bowtie.class).list();
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new DatabaseException("Fel vid hämtning av flugor");
         }
     }
+
     @Override
-    public Optional<Bowtie> getById(Long id){
+    public Optional<Bowtie> getById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("""
-                FROM Bowtie
-                WHERE itemId = :id
-                AND active = true
-                """, Bowtie.class)
+                            FROM Bowtie
+                            WHERE itemId = :id
+                            AND active = true
+                            """, Bowtie.class)
                     .setParameter("id", id)
                     .uniqueResultOptional();
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new DatabaseException("Fel vid hämtning av fluga med id: " + id);
         }
     }
+
     @Override
-    public void save(Bowtie bowtie){
+    public void save(Bowtie bowtie) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -52,8 +56,9 @@ public class BowtieRepositoryImpl implements BowtieRepository {
             throw new DatabaseException("Flugan kunde inte sparas: ");
         }
     }
+
     @Override
-    public void change(Bowtie bowtie){
+    public void change(Bowtie bowtie) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -66,19 +71,35 @@ public class BowtieRepositoryImpl implements BowtieRepository {
             throw new DatabaseException("Flugan kunde inte ändras: ");
         }
     }
+
     @Override
-    public List<Bowtie> getByMaterial(Material material){
+    public List<Bowtie> getByMaterial(Material material) {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery
-                    ("""
-                        FROM Bowtie 
-                        WHERE material = :material
-                        AND active = true
-                        """, Bowtie.class)
+                            ("""
+                                    FROM Bowtie 
+                                    WHERE material = :material
+                                    AND active = true
+                                    """, Bowtie.class)
                     .setParameter("material", material)
                     .list();
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new DatabaseException("Fel vid hämtning av flugor");
+        }
+    }
+
+    public List<Bowtie> search(String searchText) {
+        try (Session session = sessionFactory.openSession()) {
+            StringBuilder hql = new StringBuilder("FROM Bowtie WHERE active = true");
+            hql.append(" AND (color LIKE :searchText"
+                    + " OR CAST(pricePerDay as string) LIKE :searchText"
+                    + " OR CAST(material as string) LIKE :searchText)"
+            );
+            var query = session.createQuery(hql.toString(), Bowtie.class);
+            query.setParameter("searchText", "%" + searchText + "%");
+            return query.list();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid sökning av flugor.");
         }
     }
 }

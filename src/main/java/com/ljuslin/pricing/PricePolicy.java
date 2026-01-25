@@ -1,12 +1,15 @@
 package com.ljuslin.pricing;
+
+import java.math.BigDecimal;
+
 /**
  * Interface for prices
  *
  * @author Tina Ljuslin
  */
 public interface PricePolicy {
-    public double getPricePerDay(double price);
-    public double getTotalPrice(double price, int days);
+    public BigDecimal getPricePerDay(BigDecimal price);
+    public BigDecimal getTotalPrice(BigDecimal price, int days);
 
 }
 

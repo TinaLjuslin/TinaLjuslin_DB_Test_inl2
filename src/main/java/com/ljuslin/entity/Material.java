@@ -8,10 +8,7 @@ public enum Material {
     POLYESTER("Polyester"),
     WOOL("Ull"),
     COTTON("Bomull"),
-    SILK("Siden"),
-    SILVER("Silver"),
-    GOLD("Guld"),
-    BRONZE("Bronze");
+    SILK("Siden");
     private final String swedishName;
 
     Material(final String swedishName) {

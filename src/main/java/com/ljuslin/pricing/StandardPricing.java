@@ -1,20 +1,34 @@
 package com.ljuslin.pricing;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Pricing methods for level standard
  *
  * @author Tina Ljuslin
  */
 public class StandardPricing implements PricePolicy {
+    private final int DISCOUNT_PERCENTAGE = 0;
     public StandardPricing() {
     }
 
-    public double getPricePerDay(double price) {
-        return price;
+    public BigDecimal getPricePerDay(BigDecimal price) {
+        BigDecimal discountFactor = BigDecimal.valueOf(100 - DISCOUNT_PERCENTAGE);
+        BigDecimal divisor = BigDecimal.valueOf(100);
+
+        return price.multiply(discountFactor)
+                .divide(divisor, 2, RoundingMode.HALF_UP);
     }
 
-    public double getTotalPrice(double price, int days) {
-        return price * days;
+    public BigDecimal getTotalPrice(BigDecimal price, int days) {
+        BigDecimal daysBD = BigDecimal.valueOf(days);
+        BigDecimal discountFactor = BigDecimal.valueOf(100 - DISCOUNT_PERCENTAGE);
+        BigDecimal divisor = BigDecimal.valueOf(100);
+
+        return price.multiply(daysBD)
+                .multiply(discountFactor)
+                .divide(divisor, 2, RoundingMode.HALF_UP);
     }
 
 }

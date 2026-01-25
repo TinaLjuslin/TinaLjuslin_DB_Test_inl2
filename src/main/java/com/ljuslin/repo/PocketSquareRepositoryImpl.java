@@ -1,5 +1,6 @@
 package com.ljuslin.repo;
 
+import com.ljuslin.entity.Bowtie;
 import com.ljuslin.entity.Material;
 import com.ljuslin.entity.PocketSquare;
 import com.ljuslin.exception.DatabaseException;
@@ -88,4 +89,20 @@ public class PocketSquareRepositoryImpl implements PocketSquareRepository {
             throw new DatabaseException("Fel vid hämtning av näsdukar");
         }
     }
+
+    public List<PocketSquare> search(String searchText) {
+        try (Session session = sessionFactory.openSession()) {
+            StringBuilder hql = new StringBuilder("FROM PocketSquare WHERE active = true");
+            hql.append(" AND (color LIKE :searchText"
+                    + " OR CAST(pricePerDay as string) LIKE :searchText"
+                    + " OR CAST(material as string) LIKE :searchText)"
+            );
+            var query = session.createQuery(hql.toString(), PocketSquare.class);
+            query.setParameter("searchText", "%" + searchText + "%");
+            return query.list();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid sökning av näsdukar.");
+        }
+    }
+
 }

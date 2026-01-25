@@ -41,6 +41,17 @@ public class RentalRepositoryImpl implements RentalRepository {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             session.merge(rental);
+            //här behöver jag sätta items available till false
+            String hql = "UPDATE ";
+            switch (rental.getRentalType()) {
+                case TIE -> hql += "Tie SET available = false WHERE id = :id";
+                case BOWTIE -> hql += "Bowtie SET available = false WHERE id = :id";
+                case POCKET_SQUARE -> hql += "PocketSquare SET available = false WHERE id = :id";
+            }
+            session.createMutationQuery(hql)
+                    .setParameter("id", rental.getItemId())
+                    .executeUpdate();
+
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {

@@ -35,6 +35,7 @@ public class MemberService {
             memberRepository.change(member);
         } else {
             Member member = new Member(firstName, lastName, email, level);
+            member.setActive(true);
             memberRepository.save(member);
         }
     }
@@ -62,29 +63,30 @@ public class MemberService {
         return memberRepository.getById(id).get();
     }
 
-    public void changeMember(Member member, String firstName, String lastName, String email,
-                             Level level) {
-        checkMemberData(firstName, lastName, email, level);
-        //kolla så email är unikt
-        Optional<Member> optionalMember = memberRepository.findByEmail(email);
-        if (optionalMember.isPresent()) {
-            throw new InvalidDataException("Email är inte unikt, vänligen välj en annan " +
-                    "emailadress.");
+    public void changeMember(Member member) {
+        checkMemberData(member.getFirstName(), member.getLastName(), member.getEmail(), member.getLevel());
+        //KOLLA FÖRST OM EMAIL ÄR ÄNDRAT
+        Member tempMember = memberRepository.getById(member.getMemberId()).get();
+        if (!member.getEmail().equals(tempMember.getEmail())) {
+            //kolla så email är unikt
+            Optional<Member> optionalMember = memberRepository.findByEmail(member.getEmail());
+
+            if (optionalMember.isPresent()) {
+                throw new InvalidDataException("Email är inte unikt, vänligen välj en annan " +
+                        "emailadress.");
+            }
         }
-        member.setFirstName(firstName);
-        member.setLastName(lastName);
-        member.setEmail(email);
-        member.setLevel(level);
         memberRepository.change(member);
        // addToHistory(member, ("Member changed: " + member.toString()));
     }
 
     public void removeMember(Member member) {
+        //kolla om medlem har aktiva uthyrningar
         member.setActive(false);
         memberRepository.change(member);
     }
-    public List<Member> searchMember(String firstName, String lastName, String email, Level level) {
-        return memberRepository.search(firstName, lastName, email, level);
+    public List<Member> searchMembers(String searchText) {
+        return memberRepository.search(searchText);
     }
     public List<History> getHistory(Member member) {
         return historyRepository.getHistory(member);

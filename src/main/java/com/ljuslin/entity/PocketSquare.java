@@ -74,6 +74,14 @@ public class PocketSquare {
         this.available = available;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return String.format("%s näsduk i %s, pris per dag: %s (%s)",

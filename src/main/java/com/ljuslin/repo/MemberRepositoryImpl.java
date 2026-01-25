@@ -17,8 +17,9 @@ public class MemberRepositoryImpl implements MemberRepository {
     public MemberRepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+
     @Override
-    public void save(Member member){
+    public void save(Member member) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -31,11 +32,12 @@ public class MemberRepositoryImpl implements MemberRepository {
             throw new DatabaseException("Medlemmen kunde inte sparas");
         }
     }
+
     @Override
     public List<Member> getAll() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("FROM Member WHERE active = true", Member.class).list();
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new DatabaseException("Fel vid hämtning av medlemmar");
         }
     }
@@ -44,16 +46,17 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Optional<Member> getById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("""
-                FROM Member
-                WHERE memberId = :id
-                AND active = true
-                """, Member.class)
+                            FROM Member
+                            WHERE memberId = :id
+                            AND active = true
+                            """, Member.class)
                     .setParameter("id", id)
                     .uniqueResultOptional();
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new DatabaseException("Fel vid hämtning av medlem med id: " + id);
         }
     }
+
     @Override
     public void change(Member member) {
         Transaction transaction = null;
@@ -68,6 +71,7 @@ public class MemberRepositoryImpl implements MemberRepository {
             throw new DatabaseException("Member kunde inte ändras");
         }
     }
+
     @Override
     public Optional<Member> findByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
@@ -76,29 +80,29 @@ public class MemberRepositoryImpl implements MemberRepository {
                     .uniqueResultOptional();
         }
     }
+
     @Override
-    public List<Member> search(String firstName, String lastName, String email, Level level) {
+    public List<Member> search(String searchText) {
         try (Session session = sessionFactory.openSession()) {
-            StringBuilder hql = new StringBuilder("FROM Member WHERE 1=1"); // 1=1 är ett trick för att kunna lägga till "AND" enkelt
+            StringBuilder hql = new StringBuilder("FROM Member WHERE active = true"); // 1=1 är ett
+            // trick för att kunna lägga till "AND" enkelt
 
-            if (firstName != null && !firstName.isBlank())
-                hql.append(" AND firstName LIKE :firstName");
-            if (lastName != null && !lastName.isBlank()) hql.append(" AND lastName LIKE :lastName");
-            if (email != null && !email.isBlank()) hql.append(" AND email LIKE :email");
-            if (level != null) hql.append(" AND level = :level");
-            hql.append("AND active = true");
-            var query = session.createQuery(hql.toString(), Member.class);
-            if (firstName != null && !firstName.isBlank())
-                query.setParameter("firstName", "%" + firstName + "%");
-            if (lastName != null && !lastName.isBlank())
-                query.setParameter("lastName", "%" + lastName + "%");
-            if (email != null && !email.isBlank()) query.setParameter("email", "%" + email + "%");
-            if (level != null) query.setParameter("level", level);
+            if (searchText != null && !searchText.isBlank()) {
+                hql.append(" AND (firstName LIKE :searchText"
+                        + " OR lastName LIKE :searchText"
+                        + " OR email LIKE :searchText"
+                        + " OR CAST(level as string) LIKE :searchText)"
+                );
+                var query = session.createQuery(hql.toString(), Member.class);
+                query.setParameter("searchText", "%" + searchText + "%");
 
-            return query.list();
-        } catch(Exception e) {
+                return query.list();
+            }
+            return session.createQuery("FROM Member WHERE active = true", Member.class).list();
+        } catch (Exception e) {
             throw new DatabaseException("Fel vid sökning av medlemmar.");
         }
+
     }
 }
 /*public void registerMember(Member newMember) {

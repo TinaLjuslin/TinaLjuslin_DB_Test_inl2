@@ -15,5 +15,5 @@ public interface PocketSquareRepository {
     //delete får skötas i servicelagret, sätt active till false och köp update
     //void deleteById(Long id);
     List<PocketSquare> getByMaterial(Material material);
-
+    List<PocketSquare> search(String searchText);
 }

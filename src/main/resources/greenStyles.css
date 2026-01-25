@@ -1,0 +1,359 @@
+/**
+ * JavaFX CSS Theme: Mörkt olivgrönt tema
+ */
+
+/* ======================================================================
+ * GLOBAL FONT AND COLOR DEFINITIONS (Green Dark Mode)
+ * ====================================================================== */
+.root {
+    /* --- FÄRG PALETT (Extra Dämpad Olivgrön) --- */
+    -color-background: #252A24;
+    -color-foreground: #344034;
+    -color-accent: #425042;
+    -color-text: #E0E0D8;
+    -color-pressed: #B6C3A9;
+    -color-border: #425042;
+    -color-hover: #425042;
+    -fx-font-family: "Segoe UI", "Calibri", sans-serif;
+    -fx-font-size: 14px;
+    -fx-base: -color-foreground;
+    -fx-background: -color-background;
+    -fx-text-fill: -color-text;
+    -fx-padding: 15px;
+}
+
+/* ======================================================================
+ * CONTAINER STYLES (VBox, HBox, etc.)
+ * ====================================================================== */
+.vbox, .hbox, .pane, .anchor-pane, .stack-pane, .grid-pane, .border-pane {
+    -fx-background-color: -color-background;
+    -fx-padding: 15px;
+    -fx-spacing: 10px;
+}
+
+
+
+/* ======================================================================
+ * LABEL OCH TEXT STYLES
+ * ====================================================================== */
+.label {
+    -fx-text-fill: -color-text;
+    -fx-font-size: 1.0em;
+    -fx-padding: 3px 0 3px 0;
+}
+
+.label-title {
+    -fx-font-size: 1.4em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent;
+}
+
+/* ======================================================================
+ * BUTTON STYLES
+ * ====================================================================== */
+.button {
+    -fx-background-color: -color-accent;
+    -fx-text-fill: -color-text;
+    -fx-font-size: 1.0em;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 1);
+    -fx-spacing: 10;
+    -fx-background-insets: 0 10 5 10;
+
+    /* Tvingar knapparna att bli lika breda */
+    -fx-min-width: 150px;
+    -fx-max-width: 150px;
+
+    /* Säkerställer att inga oavsiktliga marginaler finns på knappen själv */
+    -fx-h-box-margin: 0;
+    -fx-v-box-margin: 0;
+
+    -fx-scale-y: 1.0;
+    -fx-scale-x: 1.0;
+}
+
+/* Hover effect */
+.button:hover {
+    -fx-background-color: #8C997C;
+    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.02;
+}
+
+/* Pressed effect (Button Press) */
+.button:pressed {
+    -fx-background-color: -color-pressed;
+    -fx-text-fill: -color-background;
+    -fx-scale-y: 0.98;
+    -fx-scale-x: 0.98;
+    -fx-effect: none;
+}
+
+/* Disabled state */
+.button:disabled {
+    -fx-background-color: -color-border;
+    -fx-text-fill: #999999;
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
+    -fx-effect: none;
+}
+
+/* ======================================================================
+ * TEXT FIELD OCH TEXT AREA STYLES
+ * ====================================================================== */
+.text-field, .text-area {
+    -fx-background-color: -color-foreground;
+    -fx-text-fill: -color-text;
+    -fx-font-size: 1.0em;
+    -fx-padding: 8px 10px;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+/* Hover effect */
+.text-field:hover, .text-area:hover {
+    -fx-border-color: -color-accent;
+}
+
+/* Focused effect */
+.text-field:focused, .text-area:focused {
+    -fx-border-color: -color-accent;
+    -fx-border-width: 2px;
+}
+
+/* Prompt Text Style (The "Skriv här..." text) */
+.text-field .prompt-text, .text-area .prompt-text {
+    -fx-fill: #999999;
+}
+
+/* ======================================================================
+ * TAB PANE OCH TAB STYLES
+ * ====================================================================== */
+.tab-pane {
+    -fx-background-color: -color-background;
+    -fx-padding: 20 0 0 0; }
+
+.tab-header-area {
+    -fx-background-color: -color-background;
+    -fx-padding: 0;
+}
+
+.tab {
+    -fx-background-color: -color-foreground;
+    -fx-background-insets: 0 3 0 0;
+    -fx-padding: 10px 15px;
+    -fx-border-width: 0 0 0 0;
+}
+
+/* Selected Tab */
+.tab:selected {
+    -fx-background-color: -color-background;
+    -fx-text-fill: -color-pressed;
+    /*
+    -fx-border-color: -color-accent;
+    -fx-border-width: 0 0 3px 0;
+    */
+    -fx-border-insets: 0 0 -1 0;
+}
+
+/* Unselected Tab Hover */
+.tab:unselected:hover {
+    -fx-background-color: -color-hover;
+}
+
+/* Tab Header Label Text */
+.tab-pane .tab-header-area .tab-label {
+    -fx-text-fill: -color-text;
+    -fx-font-size: 1.0em;
+}
+
+/* Content Area */
+.tab-pane .tab-content-area {
+    -fx-background-color: -color-background;
+    -fx-padding: 15px;
+}
+
+/* ======================================================================
+ * SCROLL PANE
+ * ====================================================================== */
+.scroll-pane {
+    -fx-background-color: -color-background;
+    -fx-border-color: -color-border;
+}
+
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: -color-accent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button,
+.scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button {
+    -fx-padding: 5;
+    -fx-background-color: -color-foreground;
+}
+
+/* ======================================================================
+ * CHECK BOX AND RADIO BUTTON
+ * ====================================================================== */
+.check-box, .radio-button {
+    -fx-text-fill: -color-text;
+}
+
+.check-box .box, .radio-button .radio {
+    -fx-background-color: -color-foreground;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1px;
+    -fx-background-radius: 3px;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .box .mark, .radio-button:selected .radio .dot {
+    -fx-background-color: -color-accent;
+}
+
+/* Hover Effect for CheckBox/RadioButton */
+.check-box:hover .box, .radio-button:hover .radio {
+    -fx-border-color: -color-accent;
+}
+
+/* ======================================================================
+ * COMBO BOX AND CHOICE BOX
+ * ====================================================================== */
+.combo-box, .choice-box {
+    -fx-background-color: -color-foreground;
+    -fx-mark-color: -color-text;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1px;
+    -fx-padding: 6px 8px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+.combo-box .list-cell, .choice-box .label {
+    -fx-text-fill: -color-text;
+    -fx-font-size: 1.0em;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: -color-foreground;
+    -fx-border-color: -color-border;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: -color-hover;
+    -fx-text-fill: -color-text;
+}
+
+/* ======================================================================
+ * TABLE VIEW
+ * ====================================================================== */
+.table-view {
+    -fx-background-color: -color-foreground;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1px;
+    -fx-font-size: 1.0em;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -color-foreground;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: -color-border;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -color-text;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: -color-foreground;
+    -fx-text-fill: -color-text;
+}
+
+/* Hover effect on row */
+.table-row-cell:filled:hover {
+    -fx-background-color: -color-hover;
+}
+
+/* Selected row */
+.table-row-cell:selected {
+    -fx-background-color: -color-accent;
+    -fx-text-fill: -color-text;
+}
+/* ======================================================================
+ * GLOBAL FONT AND COLOR DEFINITIONS (Green Dark Mode)
+ * ====================================================================== */
+.root {
+    /* ... befintliga färger ... */
+
+    /* NYTT: Färg för Ljust Toppfält */
+    -color-light-header: #E0E0D8; /* Använder din textfärg som bas för att få en benvit/vit topp */
+
+    /* ... resten av färgerna ... */
+}
+
+/* NY STIL: Definiera stilen för den anpassade fönsterramen */
+.window-header {
+    -fx-background-color: -color-light-header;
+    -fx-padding: 5px 10px 5px 15px; /* Lite padding runt innehållet */
+}
+
+/* Styla Knapparna i toppen */
+.window-header .button {
+    -fx-background-color: transparent; /* Gör bakgrunden genomskinlig */
+    -fx-text-fill: -color-background; /* Mörkgrön text på ljus bakgrund */
+    -fx-padding: 0 8px;
+    -fx-font-size: 1.2em;
+}
+
+.window-header .button:hover {
+    -fx-background-color: #D3D3CB; /* Lite mörkare vit vid hover */
+}
+.window-header {
+    -fx-background-color: -color-accent;
+    /* Lägger till lite spacing mellan knapparna och rubriken */
+    -fx-spacing: 10px;
+    -fx-padding: 5px 10px 5px 15px; /* Mindre padding på höger sida */
+    -fx-border-width: 0;
+}
+
+/* Tvinga Labeln inuti headern att bli LJUS */
+.window-header .label {
+    -fx-text-fill: -color-text;
+    -fx-font-size: 1.0em; /* Minskar labeln något för att matcha den nya storleken */
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+}
+
+/* Styla Fönsterkontrollknapparna i toppen */
+.window-header .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text;
+
+    /* ÄNDRING 1: Extremt liten padding för att krympa knappen */
+    -fx-padding: 0 4px;
+
+    /* ÄNDRING 2: Minska fontstorleken till en standardstorlek */
+    -fx-font-size: 0.9em;
+
+    /* Tvingar bort default button-höjd */
+    -fx-min-height: 20px;
+    -fx-max-height: 20px;
+
+    -fx-cursor: hand;
+    -fx-effect: none;
+    -fx-alignment: center;
+}
+
+.window-header .button:hover {
+    -fx-background-color: #5C6A4F;
+}
+
+.window-header .button:pressed {
+    -fx-background-color: #8C997C;
+}

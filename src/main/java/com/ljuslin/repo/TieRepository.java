@@ -2,6 +2,7 @@ package com.ljuslin.repo;
 
 import com.ljuslin.entity.Bowtie;
 import com.ljuslin.entity.Material;
+import com.ljuslin.entity.PocketSquare;
 import com.ljuslin.entity.Tie;
 
 import java.lang.classfile.Opcode;
@@ -16,6 +17,6 @@ public interface TieRepository {
     //delete får skötas i servicelagret, sätt active till false och köp update
     //void deleteById(Long id);
     List<Tie> getByMaterial(Material material);
-
+    List<Tie> search(String searchText);
 
 }

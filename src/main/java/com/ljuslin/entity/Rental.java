@@ -25,7 +25,7 @@ public class Rental {
             foreignKey = @ForeignKey(name = "fk_rental_member")
     )
     private Member member;
-    @Column(name = "item_id", nullable = false)
+    @Column(name = "rental_item_id", nullable = false)
     private Long itemId;
     @Enumerated(EnumType.STRING)
     @Column(name = "rental_type", nullable = false, length = 20)
