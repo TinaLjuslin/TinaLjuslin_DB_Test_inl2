@@ -17,13 +17,11 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member save(Member member) {
+    public void save(Member member) {
         Transaction transaction = null;
-        Member savedMember = null; //för att det inte går att spara member och history efter
-        // varandra, hibernate tror inte membern är skapad
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            savedMember = session.merge(member);
+            session.persist(member);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -31,7 +29,6 @@ public class MemberRepositoryImpl implements MemberRepository {
             }
             throw new DatabaseException("Medlemmen kunde inte sparas");
         }
-        return savedMember;
     }
 
     @Override
@@ -44,6 +41,7 @@ public class MemberRepositoryImpl implements MemberRepository {
             throw new DatabaseException("Fel vid hämtning av medlemmar");
         }
     }
+
     @Override
     public Optional<Member> getById(Long id) {
         try (Session session = sessionFactory.openSession()) {
@@ -60,12 +58,13 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public void change(Member member) {
+    public Member change(Member member) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(member);
+            Member updatedMember = session.merge(member);
             transaction.commit();
+            return updatedMember;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -76,6 +75,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
+        //returnerar även medlemmar som ej är aktiva
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("FROM Member WHERE email = :email", Member.class)
                     .setParameter("email", email)

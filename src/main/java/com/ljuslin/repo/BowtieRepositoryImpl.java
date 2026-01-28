@@ -47,7 +47,7 @@ public class BowtieRepositoryImpl implements BowtieRepository {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(bowtie);
+            session.persist(bowtie);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -58,12 +58,13 @@ public class BowtieRepositoryImpl implements BowtieRepository {
     }
 
     @Override
-    public void change(Bowtie bowtie) {
+    public Bowtie change(Bowtie bowtie) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(bowtie);
+            Bowtie updatedBowtie = session.merge(bowtie);
             transaction.commit();
+            return updatedBowtie;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

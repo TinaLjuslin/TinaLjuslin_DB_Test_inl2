@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * Creates view for a new rental
+ *
  * @author Tina Ljuslin
  */
 public class NewRentalView extends View {
@@ -217,26 +218,17 @@ public class NewRentalView extends View {
     }
 
     private void populateMemberTable() {
-        try {
-            List<Member> list = memberController.getAllMembers(this);
-            ObservableList<Member> observableList = FXCollections.observableList(list);
-            memberTable.setItems(observableList);
-        } catch (DatabaseException e) {
-            showInfoAlert(e.getMessage());
-        } catch (Exception e) {
-            showErrorAlert(e.getMessage());
-        }
+        List<Member> list = memberController.getAllMembers(this);
+        ObservableList<Member> observableList = FXCollections.observableList(list);
+        memberTable.setItems(observableList);
+
     }
+
     private void populateAvailableItemTable() {
-        try {
-            List<RentalObject> list = rentalObjectController.getAllAvailableRentalObjects(this);
-            ObservableList<RentalObject> observableList = FXCollections.observableList(list);
-            rentalObjectTable.setItems(observableList);
-        } catch (DatabaseException e) {
-            showInfoAlert(e.getMessage());
-        } catch (Exception e) {
-            showErrorAlert(e.getMessage());
-        }
+        List<RentalObject> list = rentalObjectController.getAllAvailableRentalObjects(this);
+        ObservableList<RentalObject> observableList = FXCollections.observableList(list);
+        rentalObjectTable.setItems(observableList);
+
     }
 
     private void populateRentalObjectTable() {

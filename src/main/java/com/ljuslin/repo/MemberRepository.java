@@ -9,8 +9,8 @@ import java.util.Optional;
 public interface MemberRepository {
     List<Member> getAll();
     Optional getById(Long id);
-    Member save(Member member);
-    void change(Member member);
+    void save(Member member);
+    Member change(Member member);
     //delete får skötas i servicelagret, sätt active till false och köp update
     Optional<Member> findByEmail(String email);
     List<Member> search(String searchText);

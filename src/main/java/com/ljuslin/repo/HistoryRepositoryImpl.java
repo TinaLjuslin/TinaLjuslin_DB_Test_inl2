@@ -35,7 +35,7 @@ public class HistoryRepositoryImpl implements HistoryRepository {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(history);
+            session.persist(history);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
