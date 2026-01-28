@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HistoryRepository {
     List<History> getHistory(Member member);
+    void save(History history);
 }

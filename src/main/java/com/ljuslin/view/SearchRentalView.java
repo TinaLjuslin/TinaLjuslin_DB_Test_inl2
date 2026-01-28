@@ -46,14 +46,10 @@ public class SearchRentalView extends View {
         scene2.getStylesheets().add(css);
 
         searchButton.setOnAction(ae -> {
-            try {
-                rentalController.searchRental(searchField.getText());
-                searchRentalStage.close();
-            } catch (DatabaseException e) {
-                showInfoAlert(e.getMessage());
-            } catch (Exception e) {
-                showErrorAlert(e.getMessage());
-            }
+                if(rentalController.searchRental(searchField.getText(), this)) {
+                    searchRentalStage.close();
+                }
+
         });
         cancelButton.setOnAction(ae -> {
             searchRentalStage.close();

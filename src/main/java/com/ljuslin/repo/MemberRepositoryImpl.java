@@ -1,9 +1,7 @@
 package com.ljuslin.repo;
 
-import com.ljuslin.entity.Level;
 import com.ljuslin.entity.Member;
 import com.ljuslin.exception.DatabaseException;
-import com.ljuslin.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -19,11 +17,13 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public void save(Member member) {
+    public Member save(Member member) {
         Transaction transaction = null;
+        Member savedMember = null; //för att det inte går att spara member och history efter
+        // varandra, hibernate tror inte membern är skapad
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(member);
+            savedMember = session.merge(member);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -31,17 +31,19 @@ public class MemberRepositoryImpl implements MemberRepository {
             }
             throw new DatabaseException("Medlemmen kunde inte sparas");
         }
+        return savedMember;
     }
 
     @Override
     public List<Member> getAll() {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("FROM Member WHERE active = true", Member.class).list();
+            return session.createQuery(
+                    "SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.history WHERE m.active = true",
+                    Member.class).list();
         } catch (Exception e) {
             throw new DatabaseException("Fel vid hämtning av medlemmar");
         }
     }
-
     @Override
     public Optional<Member> getById(Long id) {
         try (Session session = sessionFactory.openSession()) {
@@ -84,8 +86,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public List<Member> search(String searchText) {
         try (Session session = sessionFactory.openSession()) {
-            StringBuilder hql = new StringBuilder("FROM Member WHERE active = true"); // 1=1 är ett
-            // trick för att kunna lägga till "AND" enkelt
+            StringBuilder hql = new StringBuilder("FROM Member WHERE active = true");
 
             if (searchText != null && !searchText.isBlank()) {
                 hql.append(" AND (firstName LIKE :searchText"
@@ -102,25 +103,5 @@ public class MemberRepositoryImpl implements MemberRepository {
         } catch (Exception e) {
             throw new DatabaseException("Fel vid sökning av medlemmar.");
         }
-
     }
 }
-/*public void registerMember(Member newMember) {
-    Optional<Member> existingOpt = memberRepository.findByEmail(newMember.getEmail());
-
-    if (existingOpt.isPresent()) {
-        Member existing = existingOpt.get();
-        if (existing.isActive()) {
-            throw new IllegalActionException("E-posten används redan av en aktiv medlem.");
-        } else {
-            // Medlemmen fanns men var inaktiv - vi aktiverar den igen!
-            existing.setActive(true);
-            existing.setName(newMember.getName()); // Uppdatera ev. namn
-            memberRepository.change(existing);
-            System.out.println("Välkommen tillbaka! Din gamla profil har återaktiverats.");
-        }
-    } else {
-        // Helt ny medlem
-        memberRepository.save(newMember);
-    }
-}*/

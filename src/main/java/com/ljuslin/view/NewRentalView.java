@@ -1,11 +1,10 @@
 package com.ljuslin.view;
 
-import com.ljuslin.controller.ItemController;
+import com.ljuslin.controller.RentalObjectController;
 import com.ljuslin.controller.MemberController;
-import com.ljuslin.entity.Level;
-import com.ljuslin.entity.Member;
+import com.ljuslin.entity.*;
 import com.ljuslin.exception.DatabaseException;
-import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -26,7 +25,7 @@ import java.util.List;
  */
 public class NewRentalView extends View {
     private MemberController memberController;
-    private ItemController itemController;
+    private RentalObjectController rentalObjectController;
 
     private BorderPane pane;
     private Stage newRentalStage;
@@ -35,30 +34,24 @@ public class NewRentalView extends View {
     private Button chooseButton;
     private Button cancelButton;
     private TableView<Member> memberTable;
-    /*private TableView<Item> itemTable;
-    private TableColumn<Item, String> itemTypeColumn;
-    */private TableColumn<Member, String> idColumn;
+    private TableView<RentalObject> rentalObjectTable;
+    private TableColumn<RentalObject, String> typeColumn;
+    private TableColumn<Member, String> idColumn;
     private TableColumn<Member, String> firstNameColumn;
     private TableColumn<Member, String> emailColumn;
     private TableColumn<Member, String> lastNameColumn;
     private TableColumn<Member, Level> levelColumn;
-   /* private TableColumn<Item, Pattern> patternColumn;
-    private TableColumn<Item, Material> materialColumn;
-    private TableColumn<Item, String> brandColumn;
-    private TableColumn<Item, Double> priceColumn;
-    private TableColumn<Item, String> colorColumn;
-    private TableColumn<Item, String> sizeColumn;
-    private TableColumn<Item, String> preeTiedColumn;
-    private TableColumn<Item, Double> widthColumn;
-    private TableColumn<Item, Double> lengthColumn;
+    private TableColumn<RentalObject, Material> materialColumn;
+    private TableColumn<RentalObject, Double> priceColumn;
+    private TableColumn<RentalObject, String> colorColumn;
 
-   */ private Member member;
-   // private Item item;
+    private Member member;
+    private RentalObject rentalObject;
 
     public NewRentalView(MemberController memberController,
-                         ItemController itemController) {
+                         RentalObjectController rentalObjectController) {
         this.memberController = memberController;
-        this.itemController = itemController;
+        this.rentalObjectController = rentalObjectController;
     }
 
     public Member showMemberPopUp(Stage mainStage) {
@@ -107,9 +100,9 @@ public class NewRentalView extends View {
         newRentalStage.showAndWait();
         return member;
     }
-/*
 
-    public Item showAvailableItemPopUp(Stage mainStage) {
+
+    public RentalObject showAvailableRentalObjectsPopUp(Stage mainStage) {
         newRentalStage = new Stage();
         pane = new BorderPane();
         vbox = new VBox();
@@ -120,49 +113,36 @@ public class NewRentalView extends View {
         cancelButton.setMaxWidth(Double.MAX_VALUE);
         vbox.getChildren().clear();
         vbox.getChildren().addAll(chooseButton, cancelButton);
-        itemTable = new TableView<>();
-        itemTable.setEditable(false);
-        itemTypeColumn = new TableColumn<>("Typ");
-        itemTypeColumn.setCellValueFactory(cellData -> {
-            Item item = cellData.getValue();
-            if ( item instanceof Bowtie) {
-                return new ReadOnlyStringWrapper("Fluga");
-            } else {
-                return new ReadOnlyStringWrapper("Slips");
-            }
+        rentalObjectTable = new TableView<>();
+        rentalObjectTable.setEditable(false);
+        typeColumn = new TableColumn<>("Typ:");
+        typeColumn.setCellValueFactory(cellData -> {
+            RentalType type = cellData.getValue().getRentalType();
+            String swedishName = (type != null) ? type.getSwedishName() : "";
+
+            return new SimpleStringProperty(swedishName);
         });
-        patternColumn = new TableColumn<>("Mönster");
-        patternColumn.setCellValueFactory(new PropertyValueFactory<>("pattern"));
         colorColumn = new TableColumn<>("färg");
         colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
         materialColumn = new TableColumn<>("Material");
         materialColumn.setCellValueFactory(new PropertyValueFactory<>("material"));
-        brandColumn = new TableColumn<>("Märke");
-        brandColumn.setCellValueFactory(new PropertyValueFactory<>("brand"));
         priceColumn = new TableColumn<>("Pris per dag");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("pricePerDay"));
-        preeTiedColumn = new TableColumn<>("Färdigknuten");
-        preeTiedColumn.setCellValueFactory(new PropertyValueFactory<>("preTied"));
-        sizeColumn = new TableColumn<>("Storlek");
-        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        widthColumn = new TableColumn<>("Bredd");
-        widthColumn.setCellValueFactory(new PropertyValueFactory<>("width"));
-        lengthColumn = new TableColumn<>("Längd");
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
-        itemTable.getColumns().addAll(itemTypeColumn, patternColumn, colorColumn, materialColumn, brandColumn,
-                priceColumn, sizeColumn, preeTiedColumn, widthColumn, lengthColumn);
+        rentalObjectTable.getColumns().addAll(typeColumn, colorColumn,
+                materialColumn,
+                priceColumn);
         populateAvailableItemTable();
         pane.setLeft(vbox);
-        pane.setCenter(itemTable);
+        pane.setCenter(rentalObjectTable);
 
         scene2 = new Scene(pane, 1000, 500);
         String css = getClass().getResource("/greenStyles.css").toExternalForm();
         scene2.getStylesheets().add(css);
         chooseButton.setOnAction(ae -> {
-            Item tempItem = itemTable.getSelectionModel().getSelectedItem();
-            if (tempItem != null) {
-                this.item = tempItem;
+            RentalObject tempRentalObject = rentalObjectTable.getSelectionModel().getSelectedItem();
+            if (tempRentalObject != null) {
+                this.rentalObject = tempRentalObject;
                 newRentalStage.close();
             } else {
                 showInfoAlert("Välj en item att hyra!");
@@ -176,12 +156,10 @@ public class NewRentalView extends View {
         newRentalStage.initModality(Modality.APPLICATION_MODAL);
         newRentalStage.setScene(scene2);
         newRentalStage.showAndWait();
-        return item;
+        return rentalObject;
     }
-*/
 
-/*
-    public Item showAllItemPopUp(Stage mainStage, Scene mainScene) {
+    public RentalObject showRentalObjectsPopUp(Stage mainStage) {
         newRentalStage = new Stage();
         pane = new BorderPane();
         vbox = new VBox();
@@ -192,50 +170,36 @@ public class NewRentalView extends View {
         cancelButton.setMaxWidth(Double.MAX_VALUE);
         vbox.getChildren().clear();
         vbox.getChildren().addAll(chooseButton, cancelButton);
-        itemTable = new TableView<>();
+        rentalObjectTable = new TableView<>();
+        rentalObjectTable.setEditable(false);
+        typeColumn = new TableColumn<>("Typ:");
+        typeColumn.setCellValueFactory(cellData -> {
+            RentalType type = cellData.getValue().getRentalType();
+            String swedishName = (type != null) ? type.getSwedishName() : "";
 
-        itemTable.setEditable(false);
-        itemTypeColumn = new TableColumn<>("Typ");
-        itemTypeColumn.setCellValueFactory(cellData -> {
-            Item item = cellData.getValue();
-            if ( item instanceof Bowtie) {
-                return new ReadOnlyStringWrapper("Fluga");
-            } else {
-                return new ReadOnlyStringWrapper("Slips");
-            }
+            return new SimpleStringProperty(swedishName);
         });
-        patternColumn = new TableColumn<>("Mönster");
-        patternColumn.setCellValueFactory(new PropertyValueFactory<>("pattern"));
         colorColumn = new TableColumn<>("färg");
         colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
         materialColumn = new TableColumn<>("Material");
         materialColumn.setCellValueFactory(new PropertyValueFactory<>("material"));
-        brandColumn = new TableColumn<>("Märke");
-        brandColumn.setCellValueFactory(new PropertyValueFactory<>("brand"));
         priceColumn = new TableColumn<>("Pris per dag");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("pricePerDay"));
-        preeTiedColumn = new TableColumn<>("Färdigknuten");
-        preeTiedColumn.setCellValueFactory(new PropertyValueFactory<>("preTied"));
-        sizeColumn = new TableColumn<>("Storlek");
-        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        widthColumn = new TableColumn<>("Bredd");
-        widthColumn.setCellValueFactory(new PropertyValueFactory<>("width"));
-        lengthColumn = new TableColumn<>("Längd");
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
 
-        itemTable.getColumns().addAll(itemTypeColumn, patternColumn, colorColumn, materialColumn, brandColumn,
-                priceColumn, sizeColumn, preeTiedColumn, widthColumn, lengthColumn);
-        populateAllItemTable();
+        rentalObjectTable.getColumns().addAll(typeColumn, colorColumn,
+                materialColumn,
+                priceColumn);
+        populateRentalObjectTable();
         pane.setLeft(vbox);
-        pane.setCenter(itemTable);
+        pane.setCenter(rentalObjectTable);
 
         scene2 = new Scene(pane, 1000, 500);
         String css = getClass().getResource("/greenStyles.css").toExternalForm();
         scene2.getStylesheets().add(css);
         chooseButton.setOnAction(ae -> {
-            Item tempItem = itemTable.getSelectionModel().getSelectedItem();
-            if (tempItem != null) {
-                this.item = tempItem;
+            RentalObject tempRentalObject = rentalObjectTable.getSelectionModel().getSelectedItem();
+            if (tempRentalObject != null) {
+                this.rentalObject = tempRentalObject;
                 newRentalStage.close();
             } else {
                 showInfoAlert("Välj en item att hyra!");
@@ -249,13 +213,12 @@ public class NewRentalView extends View {
         newRentalStage.initModality(Modality.APPLICATION_MODAL);
         newRentalStage.setScene(scene2);
         newRentalStage.showAndWait();
-        return item;
+        return rentalObject;
     }
-*/
 
     private void populateMemberTable() {
         try {
-            List<Member> list = memberController.getAllMembers();
+            List<Member> list = memberController.getAllMembers(this);
             ObservableList<Member> observableList = FXCollections.observableList(list);
             memberTable.setItems(observableList);
         } catch (DatabaseException e) {
@@ -264,28 +227,27 @@ public class NewRentalView extends View {
             showErrorAlert(e.getMessage());
         }
     }
-/*
     private void populateAvailableItemTable() {
         try {
-            List<Item> list = itemController.getAllAvailableItems();
-            ObservableList<Item> observableList = FXCollections.observableList(list);
-            itemTable.setItems(observableList);
-        } catch (DBException e) {
+            List<RentalObject> list = rentalObjectController.getAllAvailableRentalObjects(this);
+            ObservableList<RentalObject> observableList = FXCollections.observableList(list);
+            rentalObjectTable.setItems(observableList);
+        } catch (DatabaseException e) {
             showInfoAlert(e.getMessage());
         } catch (Exception e) {
             showErrorAlert(e.getMessage());
         }
-    }*/
-/*
-    private void populateAllItemTable() {
+    }
+
+    private void populateRentalObjectTable() {
         try {
-            List<Item> list = itemController.getAllItems();
-            ObservableList<Item> observableList = FXCollections.observableList(list);
-            itemTable.setItems(observableList);
-        } catch (DBException e) {
+            List<RentalObject> list = rentalObjectController.getAllRentalObjects(this);
+            ObservableList<RentalObject> observableList = FXCollections.observableList(list);
+            rentalObjectTable.setItems(observableList);
+        } catch (DatabaseException e) {
             showInfoAlert(e.getMessage());
         } catch (Exception e) {
             showErrorAlert(e.getMessage());
         }
-    }*/
+    }
 }

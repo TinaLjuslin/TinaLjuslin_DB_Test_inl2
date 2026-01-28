@@ -1,9 +1,10 @@
 package com.ljuslin.service;
 
-import com.ljuslin.entity.Rental;
+import com.ljuslin.entity.RentalObject;
+import com.ljuslin.exception.ValidationException;
 import com.ljuslin.repo.RentalRepository;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 /**
  * Handles revenues
@@ -11,6 +12,7 @@ import java.util.List;
  * @author Tina Ljuslin
  */
 public class RevenueService {
+
     private RentalRepository rentalRepo;
 
     public RevenueService() {
@@ -19,6 +21,26 @@ public class RevenueService {
     public RevenueService(RentalRepository rentalRepo) {
         this.rentalRepo = rentalRepo;
     }
+    public String getTotalRevenue() {
+     BigDecimal bdRevenue = rentalRepo.getTotalRevenue();
+
+        if (bdRevenue == null || bdRevenue.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValidationException("Ingen vinst");
+        }
+        return bdRevenue.toString();
+    }
+    public String getRevenuePerRentalObject(RentalObject rentalObject) {
+        if(rentalObject == null) throw new ValidationException("Välj en vara att visa vinst för.");
+        BigDecimal bdRevenue = rentalRepo.getRevenuePerRentalObject(rentalObject.getRentalType(),
+                rentalObject.getItemId());
+        if (bdRevenue == null || bdRevenue.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValidationException("Ingen vinst");
+        }
+        return bdRevenue.toString();
+    }
+
+
+
 /*
     public String getTotalRevenue() {
         List<Rental> rentals = rentalRepo.getRentals();

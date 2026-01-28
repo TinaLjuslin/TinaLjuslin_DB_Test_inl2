@@ -1,6 +1,6 @@
 package com.ljuslin.view;
 
-import com.ljuslin.controller.ItemController;
+import com.ljuslin.controller.RentalObjectController;
 import com.ljuslin.entity.Material;
 import com.ljuslin.entity.RentalType;
 import com.ljuslin.exception.DatabaseException;
@@ -22,8 +22,8 @@ import javafx.util.StringConverter;
  *
  * @author Tina Ljuslin
  */
-public class NewItemView extends View {
-    private ItemController itemController;
+public class NewRentalObjectView extends View {
+    private RentalObjectController rentalObjectController;
 
     private Stage newItemStage;
     private Scene scene2;
@@ -41,8 +41,8 @@ public class NewItemView extends View {
     private Button cancelButton;
     private ComboBox<RentalType> typeBox;
     private GridPane gridPane;
-    public NewItemView(ItemController itemController) {
-        this.itemController = itemController;
+    public NewRentalObjectView(RentalObjectController rentalObjectController) {
+        this.rentalObjectController = rentalObjectController;
     }
 
     public void showPopUp(Stage mainStage, Scene mainScene) {
@@ -89,14 +89,10 @@ public class NewItemView extends View {
         scene2.getStylesheets().add(css);
         newItemStage.setScene(scene2);
         saveButton.setOnAction( ae -> {
-            try {
-                itemController.newItem(typeBox.getValue(), materialComboBox.getValue(),
-                        colorField.getText(), pricePerDayField.getText());
+
+            if(rentalObjectController.newRentalObject(typeBox.getValue(), materialComboBox.getValue(),
+                        colorField.getText(), pricePerDayField.getText(), this)){
                 newItemStage.close();
-            } catch (DatabaseException e) {
-                showInfoAlert(e.getMessage());
-            } catch (Exception e) {
-                showErrorAlert(e.getMessage());
             }
         });
 

@@ -98,5 +98,15 @@ public class TieRepositoryImpl implements TieRepository {
             throw new DatabaseException("Fel vid sökning av slipsar.");
         }
     }
+
+    @Override
+    public List<Tie> getAllAvailable() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Tie WHERE active = true AND available = true",
+                    Tie.class).list();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid hämtning av slipsar");
+        }
+    }
 }
 

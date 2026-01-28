@@ -5,7 +5,6 @@ import com.ljuslin.entity.Material;
 import com.ljuslin.entity.PocketSquare;
 import com.ljuslin.entity.Tie;
 
-import java.lang.classfile.Opcode;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,5 +17,5 @@ public interface TieRepository {
     //void deleteById(Long id);
     List<Tie> getByMaterial(Material material);
     List<Tie> search(String searchText);
-
+    List<Tie> getAllAvailable();
 }

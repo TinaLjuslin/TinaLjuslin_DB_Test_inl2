@@ -113,7 +113,7 @@ public class Member {
     @Override
     public String toString() {
         return getFirstName() + " " + getLastName() + ", ID: " + getMemberId() + ", Level: "
-                + this.level;
+                + this.getLevel() + ", email: " + this.getEmail();
     }
 }
 

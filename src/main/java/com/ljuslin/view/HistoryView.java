@@ -1,13 +1,17 @@
 package com.ljuslin.view;
 
+import com.ljuslin.entity.History;
 import com.ljuslin.entity.Member;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 /**
  * Shows view with history of a member
@@ -20,13 +24,25 @@ public class HistoryView {
     private Scene scene2;
     private VBox vBox;
     private Button okButton;
-    private ListView<String> historyView;
+    private ListView<History> historyView;
     public HistoryView() {
        }
-    public void showPopUp(Stage mainStage, Member member) {
+    public void showPopUp(Stage mainStage, Member member, List<History> historyList) {
         historyStage = new Stage();
         okButton = new Button("Ok");
-        historyView = new ListView(FXCollections.observableArrayList(member.getHistory()));
+        historyView = new ListView(FXCollections.observableArrayList(historyList));
+        historyView.setCellFactory(param -> new ListCell<History>() {
+            @Override
+            protected void updateItem(History item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    // Här hämtar vi beskrivningen!
+                    setText(item.getDescription());
+                }
+            }
+        });
         vBox = new VBox();
         vBox.getChildren().addAll(historyView, okButton);
         scene2 = new Scene(vBox, 600, 300);

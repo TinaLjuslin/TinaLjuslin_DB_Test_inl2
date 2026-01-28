@@ -1,6 +1,6 @@
 package com.ljuslin.view;
 
-import com.ljuslin.controller.ItemController;
+import com.ljuslin.controller.RentalObjectController;
 import com.ljuslin.controller.RentalController;
 import com.ljuslin.entity.*;
 import com.ljuslin.exception.DatabaseException;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class RentalView extends View implements TabView {
     private RentalController rentalController;
-    private ItemController itemController;
+    private RentalObjectController rentalObjectController;
     private Tab tab;
     private BorderPane pane;
     private VBox vbox;
@@ -47,9 +47,9 @@ public class RentalView extends View implements TabView {
     public RentalView() {
     }
 
-    public void setRentalController(RentalController rentalController, ItemController itemController) {
+    public void setRentalController(RentalController rentalController, RentalObjectController rentalObjectController) {
         this.rentalController = rentalController;
-        this.itemController = itemController;
+        this.rentalObjectController = rentalObjectController;
     }
 
     public Tab getTab() {
@@ -83,21 +83,9 @@ public class RentalView extends View implements TabView {
         itemColumn.setCellValueFactory(features -> {
             Rental rental = features.getValue();
             RentalType type = rental.getRentalType();
-            switch (type) {
-                case BOWTIE -> {
-                    Bowtie bowtie = itemController.getBowtieById(rental.getItemId());
-                    return new ReadOnlyStringWrapper(bowtie.toString());
-                }
-                case POCKET_SQUARE -> {
-                    PocketSquare pocketSquare =
-                            itemController.getPocketSquareById(rental.getItemId());
-                    return new ReadOnlyStringWrapper(pocketSquare.toString());
-                }
-                case TIE -> {
-                    Tie tie = itemController.getTieById(rental.getItemId());
-                    return new ReadOnlyStringWrapper(tie.toString());}
-            }
-            return new ReadOnlyStringWrapper("FEL");
+            RentalObject rentalObject = rentalObjectController.getRentalObjectById(type,
+                    rental.getItemId(), this);
+            return new ReadOnlyStringWrapper(rentalObject.toString());
         });
         rentalDateColumn = new TableColumn<>("Uthyrningdatum");
         rentalDateColumn.setCellValueFactory(new PropertyValueFactory<>("rentalDate"));
@@ -114,30 +102,20 @@ public class RentalView extends View implements TabView {
         pane.setCenter(table);
         tab.setContent(pane);
         newRentalButton.setOnAction(ae -> {
-          //här skulle item-tabben kunna visas istället för popup
-            /*  try {
-                rentalController.newRental();
-            } catch (DatabaseException e) {
-                showInfoAlert(e.getMessage());
-            } catch (Exception e) {
-                showErrorAlert(e.getMessage());
-            }
-            populateTable();*/
+
+            rentalController.newRental(this);
+
+            populateTable();
         });
         endRentalButton.setOnAction(ae -> {
             Rental rental = table.getSelectionModel().getSelectedItem();
             if (rental != null) {
-                try {
-                  //  rentalController.endRental(rental);
-                    //double totalCost = rentalController.getRevenuePerRental(rental);
-                   // showInfoAlert("Item återlämnad, total kostnad " + String.format("%.2f",
-                   //         totalCost) + "kr");
+                if (rentalController.endRental(rental, this)) {
+                    showInfoAlert("Item återlämnad, total kostnad " + String.format("%.2f",
+                            rental.getTotalRevenue()) + "kr");
                     populateTable();
-                } catch (DatabaseException e) {
-                    showInfoAlert(e.getMessage());
-                } catch (Exception e) {
-                    showErrorAlert(e.getMessage());
                 }
+
             } else {
                 showInfoAlert("Välj en uthyrning att avsluta!");
             }
@@ -156,7 +134,7 @@ public class RentalView extends View implements TabView {
 
     private void populateTable() {
         try {
-            List<Rental> list = rentalController.getAllRentals();
+            List<Rental> list = rentalController.getAllRentals(this);
             ObservableList<Rental> observableList = FXCollections.observableList(list);
             table.setItems(observableList);
         } catch (DatabaseException e) {

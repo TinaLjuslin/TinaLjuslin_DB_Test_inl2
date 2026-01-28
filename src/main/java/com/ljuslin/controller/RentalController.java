@@ -1,15 +1,11 @@
 package com.ljuslin.controller;
 
-import com.ljuslin.entity.Bowtie;
-import com.ljuslin.entity.RentalType;
+import com.ljuslin.entity.*;
 import com.ljuslin.exception.DatabaseException;
 
-import com.ljuslin.entity.Member;
-import com.ljuslin.entity.Rental;
+import com.ljuslin.exception.LjuslinException;
 import com.ljuslin.service.RentalService;
-import com.ljuslin.view.NewRentalView;
-import com.ljuslin.view.RentalView;
-import com.ljuslin.view.SearchRentalView;
+import com.ljuslin.view.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.stage.Stage;
@@ -22,11 +18,12 @@ import java.util.List;
  * @author Tina Ljuslin
  */
 public class RentalController {
-    private ItemController itemController;
+    private RentalObjectController rentalObjectController;
     private MemberController memberController;
     private RentalService rentalService;
     private RentalView rentalView;
     private NewRentalView newRentalView;
+    private MemberView memberView;
     private SearchRentalView searchRentalView;
     private Stage stage;
     private Scene scene;
@@ -36,12 +33,12 @@ public class RentalController {
 
     public RentalController(RentalService rentalService,
                             MemberController memberController,
-                            ItemController itemController, RentalView rentalView) {
+                            RentalObjectController rentalObjectController, RentalView rentalView) {
         this.rentalService = rentalService;
         this.rentalView = rentalView;
         this.memberController = memberController;
-        this.itemController = itemController;
-        newRentalView = new NewRentalView(memberController, itemController);
+        this.rentalObjectController = rentalObjectController;
+        this.newRentalView = new NewRentalView(memberController, rentalObjectController);
     }
 
     public void setStage(Stage stage) {
@@ -59,59 +56,88 @@ public class RentalController {
     public void populateTable() {
         try {
             rentalView.populateTable(rentalService.getRentals());
-        } catch (DatabaseException e) {
+        } catch (LjuslinException e) {
             rentalView.showInfoAlert(e.getMessage());
+        } catch (Exception e) {
+            rentalView.showErrorAlert(e.getMessage());
         }
     }
 
-    public List<Rental> getAllRentals() {
-        return rentalService.getRentals();
+    public List<Rental> getAllRentals(View view) {
+        try {
+            return rentalService.getRentals();
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return List.of();
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return List.of();
+        }
     }
-    public void newRental(RentalType type, long itemId ) {
-        Member member = newRentalView.showMemberPopUp(stage);
-        rentalService.newRental(member, type, itemId);
 
+    public void newRental(RentalObject rentalObject, View view) {
+        try {
+            Member member = newRentalView.showMemberPopUp(stage);
+            rentalService.newRental(member, rentalObject);
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+        }
     }
+
+    public void newRental(Member member, View view) {
+        try {
+            RentalObject rentalObject = newRentalView.showAvailableRentalObjectsPopUp(stage);
+            rentalService.newRental(member, rentalObject);
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+        }
+    }
+
+    public void newRental(View view) {
+        try {
+            Member member = newRentalView.showMemberPopUp(stage);
+            RentalObject rentalObject = newRentalView.showAvailableRentalObjectsPopUp(stage);
+            rentalService.newRental(member, rentalObject);
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+        }
+    }
+
     public void searchRentalView() {
         searchRentalView = new SearchRentalView(this);
         searchRentalView.showPopUp(stage, scene);
     }
-    public void searchRental(String search) {
-        List<Rental> searchRentals = rentalService.searchRentals(search);
-        rentalView.populateTable(searchRentals);
-    }
-/*
-    public double getRevenuePerRental(Rental rental) {
-        return rentalService.getRevenuePerRental(rental);
+
+    public boolean searchRental(String search, View view) {
+        try {
+            List<Rental> searchRentals = rentalService.searchRentals(search);
+            rentalView.populateTable(searchRentals);
+            return true;
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return false;
+        }
     }
 
-    public void newRental() {
-        Member member = newRentalView.showMemberPopUp(stage);
-        Item item = newRentalView.showAvailableItemPopUp(stage);
-        rentalService.newRental(member, item);
+    public boolean endRental(Rental rental, View view) {
+        try {
+            rentalService.endRental(rental);
+            return true;
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return false;
+        }
     }
-
-    public void endRental(Rental rental) {
-        rentalService.endRental(rental);
-    }
-
-    public void newRental(Member member) {
-        *//*Item item = newRentalView.showAvailableItemPopUp(stage);
-        rentalService.newRental(member, item);*//*
-    }
-
-    public void newRental() {
-        Member member = newRentalView.showMemberPopUp(stage);
-        rentalService.newRental(member, item);
-    }
-
-    public void searchRentalView() {
-        searchRentalView = new SearchRentalView(this);
-        searchRentalView.showPopUp(stage, scene);
-    }
-
-    public void searchRental(String search) {
-        List<Rental> searchRentals = rentalService.searchRentals(search);
-        rentalView.populateTable(searchRentals);
-    }*/
 }

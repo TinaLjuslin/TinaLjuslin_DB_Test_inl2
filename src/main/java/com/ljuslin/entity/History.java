@@ -48,4 +48,8 @@ public class History {
     public void setMember(Member member) {
         this.member = member;
     }
+    @Override
+    public String toString() {
+        return description;
+    }
 }
