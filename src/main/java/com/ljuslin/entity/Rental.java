@@ -34,12 +34,12 @@ public class Rental {
     @Column(name = "total_revenue", precision = 12, scale = 2)
     private BigDecimal totalRevenue;
     @Column(name = "rental_date", nullable = false)
-    private LocalDateTime rentalDate;
+    private LocalDateTime rentalDate = LocalDateTime.now();
     @Column(name = "return_date", nullable = true)
     private LocalDateTime returnDate;
     protected Rental() {}
 
-    public Rental(Member member, long itemId, RentalType rentalType) {
+    public Rental(Member member, Long itemId, RentalType rentalType) {
         this.member = member;
         this.itemId = itemId;
         this.rentalType = rentalType;
@@ -57,11 +57,11 @@ public class Rental {
         this.member = member;
     }
 
-    public long getItemId() {
+    public Long getItemId() {
         return itemId;
     }
 
-    public void setItemId(long itemId) {
+    public void setItemId(Long itemId) {
         this.itemId = itemId;
     }
 

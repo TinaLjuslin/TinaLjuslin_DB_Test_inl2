@@ -38,7 +38,8 @@ public class WigellApplication extends Application {
     private RentalRepositoryImpl rentalRepo = new RentalRepositoryImpl(sessionFactory);
 
     private RentalObjectService rentalObjectService = new RentalObjectService(bowtieRepository, pocketSquareRepository, tieRepository);
-    private MemberService memberService = new MemberService(memberRepository, historyRepository);
+    private MemberService memberService = new MemberService(memberRepository, historyRepository,
+            rentalRepository);
     private RentalService rentalService = new RentalService(rentalRepository, historyRepository, rentalObjectService);
     private RevenueService revenueService = new RevenueService(rentalRepo);
 

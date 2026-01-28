@@ -66,10 +66,10 @@ changeButton.setOnAction(ae -> {
         tab = new Tab("Medlemmar");
         pane = new BorderPane();
         vbox = new VBox();
-        newButton = new Button("Ny medlem");
-        searchButton = new Button("Sök medlem");
-        changeButton = new Button("Ändra medlem");
-        deleteButton = new Button("Ta bort medlem");
+        newButton = new Button("Ny");
+        searchButton = new Button("Sök");
+        changeButton = new Button("Ändra");
+        deleteButton = new Button("Ta bort");
         historyButton = new Button("Visa historia");
         newRentalButton = new Button("Ny uthyrning");
         rechargeButton = new Button("Ladda om");
@@ -103,6 +103,9 @@ changeButton.setOnAction(ae -> {
         searchButton.setOnAction(ae -> {
             memberController.searchMemberView();
         });
+        changeButton.disableProperty().bind(
+                table.getSelectionModel().selectedItemProperty().isNull()
+        );
         changeButton.setOnAction(ae -> {
             Member member = table.getSelectionModel().getSelectedItem();
             if (member != null) {
@@ -112,20 +115,22 @@ changeButton.setOnAction(ae -> {
                 showInfoAlert("Välj en medlem att ändra!");
             }
         });
+        newRentalButton.disableProperty().bind(
+                table.getSelectionModel().selectedItemProperty().isNull()
+        );
         newRentalButton.setOnAction(ae -> {
             Member member = table.getSelectionModel().getSelectedItem();
             if (member != null) {
-                try {
-                    rentalController.newRental(member, this);
-                } catch (DatabaseException e) {
-                    showInfoAlert(e.getMessage());
-                } catch (Exception e) {
-                    showErrorAlert(e.getMessage());
-                }
+
+                rentalController.newRental(member, this);
+
             } else {
                 showInfoAlert("Välj en medlem att hyra ut till!");
             }
         });
+        deleteButton.disableProperty().bind(
+                table.getSelectionModel().selectedItemProperty().isNull()
+        );
         deleteButton.setOnAction(ae -> {
             Member member = table.getSelectionModel().getSelectedItem();
             if (member != null) {
@@ -139,6 +144,9 @@ changeButton.setOnAction(ae -> {
                 showInfoAlert("Välj en medlem att ta bort!");
             }
         });
+        historyButton.disableProperty().bind(
+                table.getSelectionModel().selectedItemProperty().isNull()
+        );
         historyButton.setOnAction(ae -> {
             Member member = table.getSelectionModel().getSelectedItem();
             if (member != null) {

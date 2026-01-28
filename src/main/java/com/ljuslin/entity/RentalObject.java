@@ -3,7 +3,7 @@ package com.ljuslin.entity;
 import java.math.BigDecimal;
 
 public interface RentalObject {
-    long getItemId();
+    Long getItemId();
     Material getMaterial();
     void setMaterial(Material material);
     String getColor();

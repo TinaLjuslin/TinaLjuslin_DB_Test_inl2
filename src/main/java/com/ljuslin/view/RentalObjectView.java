@@ -127,6 +127,9 @@ public class RentalObjectView extends View implements TabView {
         searchButton.setOnAction(e -> {
             rentalObjectController.searchRentalObjectView();
         });
+        changeButton.disableProperty().bind(
+                rentalObjectTable.getSelectionModel().selectedItemProperty().isNull()
+        );
         changeButton.setOnAction(e -> {
             RentalObject rentalObject = rentalObjectTable.getSelectionModel().getSelectedItem();
             if (rentalObject != null) {
@@ -138,6 +141,9 @@ public class RentalObjectView extends View implements TabView {
             }
 
         });
+        deleteButton.disableProperty().bind(
+                rentalObjectTable.getSelectionModel().selectedItemProperty().isNull()
+        );
         deleteButton.setOnAction(ae -> {
             RentalObject rentalObject = rentalObjectTable.getSelectionModel().getSelectedItem();
             if (rentalObject != null) {
@@ -149,6 +155,9 @@ public class RentalObjectView extends View implements TabView {
                 showInfoAlert("Välj en vara att ta bort.");
             }
         });
+        newRentalButton.disableProperty().bind(
+                rentalObjectTable.getSelectionModel().selectedItemProperty().isNull()
+        );
         newRentalButton.setOnAction(ae -> {
             RentalObject rentalObject = rentalObjectTable.getSelectionModel().getSelectedItem();
             if (rentalObject == null) {

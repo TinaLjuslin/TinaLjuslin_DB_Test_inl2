@@ -5,6 +5,7 @@ import com.ljuslin.entity.Member;
 import com.ljuslin.exception.ValidationException;
 import com.ljuslin.repo.HistoryRepositoryImpl;
 import com.ljuslin.repo.MemberRepositoryImpl;
+import com.ljuslin.repo.RentalRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
@@ -16,13 +17,15 @@ class MemberServiceTest {
     private MemberRepositoryImpl memberRepo;
     private MemberService memberService;
     private HistoryRepositoryImpl historyRepo;
+    private RentalRepositoryImpl rentalRepo;
 
     @BeforeEach
     void setUp() {
         //inte till riktiga databasen
         memberRepo = mock(MemberRepositoryImpl.class);
         historyRepo = mock(HistoryRepositoryImpl.class);
-        memberService = new MemberService(memberRepo, historyRepo);
+        rentalRepo = mock(RentalRepositoryImpl.class);
+        memberService = new MemberService(memberRepo, historyRepo, rentalRepo);
     }
 
     @Test
@@ -46,13 +49,12 @@ class MemberServiceTest {
     }
 
     @Test
-    void newMember_shoudActivateOldMember_ifInactiveMemberExistsByEmail() {
+    void newMember_shouldActivateOldMember_ifInactiveMemberExistsByEmail() {
 
         Member oldMember = new Member("peter", "OldName", "petter@mail.se", Level.STANDARD);
         setIdViaReflection(oldMember, 1L);
         oldMember.setActive(false);
         when(memberRepo.findByEmail("petter@mail.se")).thenReturn(Optional.of(oldMember));
-        when(memberRepo.save(oldMember)).thenReturn(oldMember);
         memberService.newMember("peter", "NewName", "petter@mail.se", Level.PREMIUM);
 
         assertTrue(oldMember.isActive(),"Member should be set to active again");

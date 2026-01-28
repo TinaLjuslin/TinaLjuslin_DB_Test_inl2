@@ -8,18 +8,22 @@ import com.ljuslin.exception.ValidationException;
 import com.ljuslin.exception.IllegalActionException;
 import com.ljuslin.repo.HistoryRepositoryImpl;
 import com.ljuslin.repo.MemberRepositoryImpl;
+import com.ljuslin.repo.RentalRepositoryImpl;
 import com.ljuslin.util.ValidationUtil;
 
 import java.util.List;
 import java.util.Optional;
 
 public class MemberService {
-    MemberRepositoryImpl memberRepository;
-    HistoryRepositoryImpl historyRepository;
+    private MemberRepositoryImpl memberRepository;
+    private HistoryRepositoryImpl historyRepository;
+    private RentalRepositoryImpl rentalRepository;
 
-    public MemberService(MemberRepositoryImpl memberRepository, HistoryRepositoryImpl historyRepository) {
+    public MemberService(MemberRepositoryImpl memberRepository,
+                         HistoryRepositoryImpl historyRepository, RentalRepositoryImpl rentalRepository) {
         this.memberRepository = memberRepository;
         this.historyRepository = historyRepository;
+        this.rentalRepository = rentalRepository;
     }
 
     public void newMember(String firstName, String lastName, String email, Level level) {
@@ -27,24 +31,24 @@ public class MemberService {
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
         if (optionalMember.isPresent()) {
             if (optionalMember.get().isActive()) {
-                throw new IllegalActionException("This member already exists.");
+                throw new IllegalActionException("Denna email är upptagen.");
             }
             Member member = optionalMember.get();
             member.setActive(true);
             member.setFirstName(firstName);
             member.setLastName(lastName);
             member.setLevel(level);
-            Member m = memberRepository.save(member);
+            memberRepository.save(member);
             History history =
-                    new History((ValidationUtil.getNow() + ": " + m.toString()
-                            + ": skapad"), m);
-                    historyRepository.save(history);
+                    new History((ValidationUtil.getNow() + ": " + member.toString()
+                            + ": skapad"), member);
+            historyRepository.save(history);
         } else {
             Member member = new Member(firstName, lastName, email, level);
             member.setActive(true);
-            Member m = memberRepository.save(member);
-            History history = new History((ValidationUtil.getNow() + ": " + m.toString()
-                    + ": skapad"), m);
+            memberRepository.save(member);
+            History history = new History((ValidationUtil.getNow() + ": " + member.toString()
+                    + ": skapad"), member);
             historyRepository.save(history);
         }
     }
@@ -61,6 +65,7 @@ public class MemberService {
         }
         return true;
     }
+
     public void changeMember(Member member) {
         checkMemberData(member.getFirstName(), member.getLastName(), member.getEmail(), member.getLevel());
         Member tempMember = memberRepository.getById(member.getMemberId()).get();
@@ -72,15 +77,18 @@ public class MemberService {
                         "emailadress.");
             }
         }
-        memberRepository.change(member);
+        Member changedMember = memberRepository.change(member);
         History history = new History((ValidationUtil.getNow() + ": " + member.toString()
-                + ": uppdaterad"), member);
+                + ": uppdaterad"), changedMember);
         historyRepository.save(history);
 
     }
 
     public void removeMember(Member member) {
-        //kolla om medlem har aktiva uthyrningar
+        if (rentalRepository.checkMemberHasActiveRental(member)) {
+            throw new IllegalActionException("Medlemmen har aktiva uthyrningar och kan ej tas " +
+                    "bort.");
+        }
         member.setActive(false);
         memberRepository.change(member);
         History history = new History((ValidationUtil.getNow() + ": " + member.toString()
@@ -90,15 +98,15 @@ public class MemberService {
     }
 
     public List<Member> searchMembers(String searchText) {
-        if(searchText == null || searchText.isBlank()) {
+        if (searchText == null || searchText.isBlank()) {
             throw new ValidationException("Skriv i en söksträng.");
         }
         return memberRepository.search(searchText);
     }
 
     public List<History> getHistory(Member member) {
-        List<History>list = historyRepository.getHistory(member);
-        if(list.isEmpty()) {
+        List<History> list = historyRepository.getHistory(member);
+        if (list.isEmpty()) {
             throw new EntityNotFoundException("Ingen history funnen");
         }
         return list;

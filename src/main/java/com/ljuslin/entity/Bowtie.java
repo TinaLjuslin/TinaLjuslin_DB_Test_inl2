@@ -38,7 +38,7 @@ public class Bowtie implements RentalObject {
         this.available = true;
     }
 
-    public long getItemId() {
+    public Long getItemId() {
         return itemId;
     }
 

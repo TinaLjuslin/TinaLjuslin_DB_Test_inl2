@@ -78,7 +78,10 @@ public class RentalController {
     public void newRental(RentalObject rentalObject, View view) {
         try {
             Member member = newRentalView.showMemberPopUp(stage);
-            rentalService.newRental(member, rentalObject);
+            if (member != null && rentalObject != null) {
+
+                rentalService.newRental(member, rentalObject);
+            }
         } catch (LjuslinException e) {
             view.showInfoAlert(e.getMessage());
         } catch (Exception e) {
@@ -88,8 +91,12 @@ public class RentalController {
 
     public void newRental(Member member, View view) {
         try {
+
             RentalObject rentalObject = newRentalView.showAvailableRentalObjectsPopUp(stage);
-            rentalService.newRental(member, rentalObject);
+            if (member != null && rentalObject != null) {
+
+                rentalService.newRental(member, rentalObject);
+            }
         } catch (LjuslinException e) {
             view.showInfoAlert(e.getMessage());
         } catch (Exception e) {
@@ -100,8 +107,13 @@ public class RentalController {
     public void newRental(View view) {
         try {
             Member member = newRentalView.showMemberPopUp(stage);
-            RentalObject rentalObject = newRentalView.showAvailableRentalObjectsPopUp(stage);
-            rentalService.newRental(member, rentalObject);
+            if (member != null) {
+                RentalObject rentalObject = newRentalView.showAvailableRentalObjectsPopUp(stage);
+
+                if (rentalObject != null) {
+                    rentalService.newRental(member, rentalObject);
+                }
+            }
         } catch (LjuslinException e) {
             view.showInfoAlert(e.getMessage());
         } catch (Exception e) {

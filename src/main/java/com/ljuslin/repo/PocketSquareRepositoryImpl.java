@@ -49,7 +49,7 @@ public class PocketSquareRepositoryImpl implements PocketSquareRepository {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(pocketSquare);
+            session.persist(pocketSquare);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -60,12 +60,13 @@ public class PocketSquareRepositoryImpl implements PocketSquareRepository {
     }
 
     @Override
-    public void change(PocketSquare pocketSquare) {
+    public PocketSquare change(PocketSquare pocketSquare) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(pocketSquare);
+            PocketSquare updatedPocketSquare = session.merge(pocketSquare);
             transaction.commit();
+            return updatedPocketSquare;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

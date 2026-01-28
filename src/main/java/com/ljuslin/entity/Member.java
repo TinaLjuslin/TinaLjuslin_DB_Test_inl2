@@ -21,7 +21,7 @@ public class Member {
     private String firstName;
     @Column(name = "last_name", length = 40, nullable = false)
     private String lastName;
-    @Column(name = "email", length = 100, nullable = false)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
     @Enumerated(EnumType.STRING)
     @Column(name = "level", length = 20, nullable = false)

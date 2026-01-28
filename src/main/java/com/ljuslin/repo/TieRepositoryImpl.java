@@ -44,7 +44,7 @@ public class TieRepositoryImpl implements TieRepository {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(tie);
+            session.persist(tie);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -54,12 +54,13 @@ public class TieRepositoryImpl implements TieRepository {
         }
     }
     @Override
-    public void change(Tie tie){
+    public Tie change(Tie tie){
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(tie);
+            Tie updatedTie = session.merge(tie);
             transaction.commit();
+            return updatedTie;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

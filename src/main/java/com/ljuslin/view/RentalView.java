@@ -57,8 +57,8 @@ public class RentalView extends View implements TabView {
         vbox = new VBox();
         pane = new BorderPane();
 
-        newRentalButton = new Button("Ny uthyrning");
-        searchButton = new Button("Sök uthyrning");
+        newRentalButton = new Button("Ny");
+        searchButton = new Button("Sök");
         endRentalButton = new Button("Avsluta uthyrning");
         rechargeButton = new Button("Ladda om");
         newRentalButton.setMaxWidth(Double.MAX_VALUE);
@@ -107,6 +107,9 @@ public class RentalView extends View implements TabView {
 
             populateTable();
         });
+        endRentalButton.disableProperty().bind(
+                table.getSelectionModel().selectedItemProperty().isNull()
+        );
         endRentalButton.setOnAction(ae -> {
             Rental rental = table.getSelectionModel().getSelectedItem();
             if (rental != null) {
@@ -133,15 +136,10 @@ public class RentalView extends View implements TabView {
     }
 
     private void populateTable() {
-        try {
-            List<Rental> list = rentalController.getAllRentals(this);
-            ObservableList<Rental> observableList = FXCollections.observableList(list);
-            table.setItems(observableList);
-        } catch (DatabaseException e) {
-            showInfoAlert(e.getMessage());
-        } catch (Exception e) {
-            showErrorAlert(e.getMessage());
-        }
+        List<Rental> list = rentalController.getAllRentals(this);
+        ObservableList<Rental> observableList = FXCollections.observableList(list);
+        table.setItems(observableList);
+
     }
 
     public void populateTable(List<Rental> rentals) {

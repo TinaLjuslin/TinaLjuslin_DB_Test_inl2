@@ -32,10 +32,10 @@ public class RentalService {
         rental.setTotalRevenue(BigDecimal.ZERO);
         rentalObject.setAvailable(false);
         rentalObjectService.setRentalObjectAvailable(rentalObject, false);
-        Rental tempRental = rentalRepository.save(rental);
+        rentalRepository.save(rental);
         History history =
-                new History((ValidationUtil.getNow() + ": " + tempRental.toString()
-                        + " uthyrning påbörjad."), tempRental.getMember());
+                new History((ValidationUtil.getNow() + ": " + rental.toString()
+                        + " uthyrning påbörjad."), rental.getMember());
         historyRepository.save(history);
 
     }
@@ -51,12 +51,11 @@ public class RentalService {
         int days = (int) ChronoUnit.DAYS.between(rental.getRentalDate(), rental.getReturnDate());
         BigDecimal price = getTotalPrice(rental.getMember(), rentalObject.getPricePerDay(), days );
         rental.setTotalRevenue(price);
-        rentalRepository.change(rental);
+        Rental updatedRental = rentalRepository.change(rental);
         History history =
-                new History((ValidationUtil.getNow() + ": " + rental.toString()
-                        + " avslutad."), rental.getMember());
+                new History((ValidationUtil.getNow() + ": " + updatedRental.toString()
+                        + " avslutad."), updatedRental.getMember());
         historyRepository.save(history);
-
     }
 
     private BigDecimal getTotalPrice(Member member, BigDecimal pricePerDay, int days) {
@@ -69,8 +68,10 @@ public class RentalService {
                 return (new StandardPricing()).getTotalPrice(pricePerDay, days);
         }
     }
-    public List<Rental> searchRentals(String search) {
-    //List<Rental> searchRentals = rentalService.searchRentals(search);
-    return null;
+    public List<Rental> searchRentals(String searchText) {
+        if (searchText == null || searchText.isBlank()) {
+            throw new ValidationException("Skriv i en söksträng.");
+        }
+        return rentalRepository.search(searchText);
     }
 }

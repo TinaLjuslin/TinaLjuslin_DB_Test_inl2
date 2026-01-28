@@ -12,7 +12,7 @@ public interface TieRepository {
     List<Tie> getAll();
     Optional<Tie> getById(Long id);
     void save(Tie tie);
-    void change(Tie tie);
+    Tie change(Tie tie);
     //delete får skötas i servicelagret, sätt active till false och köp update
     //void deleteById(Long id);
     List<Tie> getByMaterial(Material material);
