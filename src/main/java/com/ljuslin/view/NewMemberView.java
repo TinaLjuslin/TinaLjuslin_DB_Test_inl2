@@ -2,7 +2,6 @@ package com.ljuslin.view;
 
 import com.ljuslin.controller.MemberController;
 import com.ljuslin.entity.Level;
-import com.ljuslin.exception.DatabaseException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -16,7 +15,7 @@ import javafx.stage.Stage;
  *
  * @author Tina Ljuslin
  */
-public class NewMemberView extends View{
+public class NewMemberView extends View {
     private MemberController memberController;
 
     private Stage newMemberStage;
@@ -67,16 +66,12 @@ public class NewMemberView extends View{
         String css = getClass().getResource("/greenStyles.css").toExternalForm();
         scene2.getStylesheets().add(css);
 
-        saveButton.setOnAction( ae -> {
-            try {
-                memberController.newMember(fistNameField.getText(), lastNameField.getText(),
-                        emailField.getText(),levelComboBox.getValue());
+        saveButton.setOnAction(ae -> {
+            if (memberController.newMember(fistNameField.getText(), lastNameField.getText(),
+                            emailField.getText(), levelComboBox.getValue(), this)) {
                 newMemberStage.close();
-            } catch (DatabaseException e) {
-                showInfoAlert(e.getMessage());
-            } catch (Exception e) {
-                showErrorAlert(e.getMessage());
             }
+
         });
         cancelButton.setOnAction(ae -> {
             newMemberStage.close();

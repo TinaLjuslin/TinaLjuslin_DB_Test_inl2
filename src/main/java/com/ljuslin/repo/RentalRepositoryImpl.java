@@ -1,12 +1,16 @@
 package com.ljuslin.repo;
 
+import com.ljuslin.entity.Member;
 import com.ljuslin.entity.Rental;
+import com.ljuslin.entity.RentalObject;
+import com.ljuslin.entity.RentalType;
 import com.ljuslin.exception.DatabaseException;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,12 +40,12 @@ public class RentalRepositoryImpl implements RentalRepository {
     }
 
     @Override
-    public void save(Rental rental) {
+    public Rental save(Rental rental) {
+        Rental tempRental = null;
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.merge(rental);
-            //här behöver jag sätta items available till false
+            tempRental = session.merge(rental);
             String hql = "UPDATE ";
             switch (rental.getRentalType()) {
                 case TIE -> hql += "Tie SET available = false WHERE id = :id";
@@ -59,6 +63,7 @@ public class RentalRepositoryImpl implements RentalRepository {
             }
             throw new DatabaseException("Uthyrningen kunde inte sparas");
         }
+        return tempRental;
     }
 
     @Override
@@ -73,6 +78,29 @@ public class RentalRepositoryImpl implements RentalRepository {
                 transaction.rollback();
             }
             throw new DatabaseException("Uthyrningen kunde inte ändras");
+        }
+    }
+
+    @Override
+    public BigDecimal getTotalRevenue() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("SELECT SUM(totalRevenue) FROM Rental", BigDecimal.class)
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid hämtning av totalRevenue");
+        }
+    }
+
+    public BigDecimal getRevenuePerRentalObject(RentalType rentalType, long itemId) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("SELECT SUM(totalRevenue) FROM Rental WHERE rentalType " +
+                                    "=:rentalType AND itemId = :itemId",
+                            BigDecimal.class)
+                    .setParameter("rentalType", rentalType)
+                    .setParameter("itemId", itemId)
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid hämtning av totalRevenue");
         }
     }
 }

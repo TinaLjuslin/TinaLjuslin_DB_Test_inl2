@@ -15,5 +15,6 @@ public interface BowtieRepository {
     //void delete(Bowtie bowtie);
     List<Bowtie> getByMaterial(Material material);
     List<Bowtie> search(String searchText);
+    List<Bowtie> getAllAvailable();
 
 }

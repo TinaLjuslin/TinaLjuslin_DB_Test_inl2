@@ -105,4 +105,13 @@ public class PocketSquareRepositoryImpl implements PocketSquareRepository {
         }
     }
 
+    @Override
+    public List<PocketSquare> getAllAvailable() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM PocketSquare WHERE active = true AND available = true",
+                    PocketSquare.class).list();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid hämtning av näsdukar");
+        }
+    }
 }

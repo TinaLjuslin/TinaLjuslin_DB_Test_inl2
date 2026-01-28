@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "pocket_square")
-public class PocketSquare {
+public class PocketSquare implements RentalObject{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pocket_square_id", nullable = false)
@@ -89,6 +89,10 @@ public class PocketSquare {
                 material,
                 pricePerDay,
                 available ? "tillgänglig" : "ej tillgänglig");
+    }
+
+    public RentalType getRentalType(){
+        return RentalType.POCKET_SQUARE;
     }
 }
 

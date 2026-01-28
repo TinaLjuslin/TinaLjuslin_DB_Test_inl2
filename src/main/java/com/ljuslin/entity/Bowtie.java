@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "bowtie")
-public class Bowtie {
+public class Bowtie implements RentalObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bowtie_id", nullable = false)
@@ -89,5 +89,8 @@ public class Bowtie {
                 material,
                 pricePerDay,
                 available ? "tillgänglig" : "ej tillgänglig");
+    }
+    public RentalType getRentalType(){
+        return RentalType.BOWTIE;
     }
 }

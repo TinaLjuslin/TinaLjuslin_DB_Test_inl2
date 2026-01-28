@@ -4,6 +4,8 @@ import com.ljuslin.controller.MemberController;
 import com.ljuslin.entity.Level;
 import com.ljuslin.entity.Member;
 import com.ljuslin.exception.DatabaseException;
+import com.ljuslin.exception.IllegalActionException;
+import com.ljuslin.exception.ValidationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -68,19 +70,15 @@ public class ChangeMemberView extends View {
         scene2.getStylesheets().add(css);
 
         saveButton.setOnAction( ae -> {
-            try {
+
                 member.setFirstName(firstNameField.getText());
                 member.setLastName(lastNameField.getText());
-    //om email inte ändrats så blir det fel...
                 member.setEmail(emailField.getText());
                 member.setMemberLevel(levelComboBox.getValue());
-                memberController.changeMember(member);
+             if(   memberController.changeMember(member, this)){
                 newMemberStage.close();
-            } catch (DatabaseException e) {
-                showInfoAlert(e.getMessage());
-            } catch (Exception e) {
-                showErrorAlert(e.getMessage());
             }
+
         });
         cancelButton.setOnAction(ae -> {
             newMemberStage.close();

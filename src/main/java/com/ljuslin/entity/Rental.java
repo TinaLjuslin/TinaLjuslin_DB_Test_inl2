@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Connects a member and an item to make a rental in the shop, has rental date and return date
@@ -33,9 +34,9 @@ public class Rental {
     @Column(name = "total_revenue", precision = 12, scale = 2)
     private BigDecimal totalRevenue;
     @Column(name = "rental_date", nullable = false)
-    private LocalDate rentalDate;
+    private LocalDateTime rentalDate;
     @Column(name = "return_date", nullable = true)
-    private LocalDate returnDate;
+    private LocalDateTime returnDate;
     protected Rental() {}
 
     public Rental(Member member, long itemId, RentalType rentalType) {
@@ -80,19 +81,24 @@ public class Rental {
         this.totalRevenue = totalRevenue;
     }
 
-    public LocalDate getRentalDate() {
+    public LocalDateTime getRentalDate() {
         return rentalDate;
     }
 
-    public void setRentalDate(LocalDate rentalDate) {
+    public void setRentalDate(LocalDateTime rentalDate) {
         this.rentalDate = rentalDate;
     }
 
-    public LocalDate getReturnDate() {
+    public LocalDateTime getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(LocalDate returnDate) {
+    public void setReturnDate(LocalDateTime returnDate) {
         this.returnDate = returnDate;
+    }
+    @Override
+    public String toString() {
+        return "Rental, id:" + getRentalId() + " " + getMember().toString() + ", " +
+                getRentalType() + ", " + getItemId() + ", " + getTotalRevenue();
     }
 }

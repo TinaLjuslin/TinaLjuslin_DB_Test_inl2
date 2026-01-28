@@ -102,4 +102,14 @@ public class BowtieRepositoryImpl implements BowtieRepository {
             throw new DatabaseException("Fel vid sökning av flugor.");
         }
     }
+    @Override
+    public List<Bowtie> getAllAvailable() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Bowtie WHERE active = true AND available = true",
+                    Bowtie.class).list();
+        } catch (Exception e) {
+            throw new DatabaseException("Fel vid hämtning av flugor");
+        }
+    }
+
 }

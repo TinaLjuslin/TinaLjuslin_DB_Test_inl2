@@ -1,47 +1,64 @@
 package com.ljuslin.service;
 
 import com.ljuslin.entity.*;
+import com.ljuslin.exception.ValidationException;
 import com.ljuslin.pricing.PremiumPricing;
 import com.ljuslin.pricing.StandardPricing;
 import com.ljuslin.pricing.StudentPricing;
+import com.ljuslin.repo.HistoryRepositoryImpl;
 import com.ljuslin.repo.RentalRepositoryImpl;
+import com.ljuslin.util.ValidationUtil;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class RentalService {
-    RentalRepositoryImpl rentalRepository;
+    private RentalRepositoryImpl rentalRepository;
+    private HistoryRepositoryImpl historyRepository;
+    private RentalObjectService rentalObjectService;
 
-    public RentalService(RentalRepositoryImpl rentalRepository) {
+    public RentalService(RentalRepositoryImpl rentalRepository, HistoryRepositoryImpl historyRepository,
+                         RentalObjectService rentalObjectService) {
         this.rentalRepository = rentalRepository;
+        this.historyRepository = historyRepository;
+        this.rentalObjectService = rentalObjectService;
     }
 
-    public void newRental(Member member, RentalType type, long itemId) {
-        Rental rental = new Rental(member, itemId, type);
-        rental.setRentalDate(LocalDate.now());
+    public void newRental(Member member, RentalObject rentalObject) {
+        Rental rental = new Rental(member, rentalObject.getItemId(),
+                rentalObject.getRentalType());
+        rental.setRentalDate(ValidationUtil.getNowAsLocalDateTime());
         rental.setTotalRevenue(BigDecimal.ZERO);
-        rentalRepository.save(rental);
+        rentalObject.setAvailable(false);
+        rentalObjectService.setRentalObjectAvailable(rentalObject, false);
+        Rental tempRental = rentalRepository.save(rental);
+        History history =
+                new History((ValidationUtil.getNow() + ": " + tempRental.toString()
+                        + " uthyrning påbörjad."), tempRental.getMember());
+        historyRepository.save(history);
+
     }
     public List<Rental> getRentals() {
         return rentalRepository.getAll();
     }
-    /*
     public void endRental(Rental rental) {
-        //kolla så rental inte redan har ett return date
-
-        rental.setReturnDate(LocalDate.now());
-        int days = (int) ChronoUnit.DAYS.between(rental.getRentalDate(), rental.getReturnDate());
-
-        BigDecimal price = getTotalPrice(rental.getMember(), rental.get )
-    }
-    private BigDecimal getPrice(Rental rental) {
-        switch (rental.getRentalType()) {
-            case BOWTIE:
+        if (rental.getReturnDate() != null) {
+            throw new ValidationException("Denna vara är redan återlämnad");
         }
-    }*/
+        rental.setReturnDate(ValidationUtil.getNowAsLocalDateTime());
+        RentalObject rentalObject = rentalObjectService.getRentalObjectById(rental.getRentalType(), rental.getItemId());
+        int days = (int) ChronoUnit.DAYS.between(rental.getRentalDate(), rental.getReturnDate());
+        BigDecimal price = getTotalPrice(rental.getMember(), rentalObject.getPricePerDay(), days );
+        rental.setTotalRevenue(price);
+        rentalRepository.change(rental);
+        History history =
+                new History((ValidationUtil.getNow() + ": " + rental.toString()
+                        + " avslutad."), rental.getMember());
+        historyRepository.save(history);
+
+    }
+
     private BigDecimal getTotalPrice(Member member, BigDecimal pricePerDay, int days) {
         switch (member.getMemberLevel()) {
             case PREMIUM:
@@ -56,6 +73,4 @@ public class RentalService {
     //List<Rental> searchRentals = rentalService.searchRentals(search);
     return null;
     }
-
-
 }

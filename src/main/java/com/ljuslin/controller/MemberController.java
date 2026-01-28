@@ -1,13 +1,15 @@
 package com.ljuslin.controller;
 
+import com.ljuslin.entity.History;
 import com.ljuslin.entity.Level;
 import com.ljuslin.entity.Member;
-import com.ljuslin.exception.DatabaseException;
+import com.ljuslin.exception.*;
 import com.ljuslin.service.MemberService;
 import com.ljuslin.view.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.stage.Stage;
+import org.hibernate.action.internal.EntityActionVetoException;
 
 import java.util.List;
 
@@ -49,13 +51,23 @@ public class MemberController {
     public void populateTable() {
         try {
             memberView.populateTable(memberService.getAllMembers());
-        } catch (DatabaseException e) {
+        } catch (LjuslinException e) {
             memberView.showInfoAlert(e.getMessage());
+        } catch (Exception e) {
+            memberView.showErrorAlert(e.getMessage());
         }
     }
 
-    public List<Member> getAllMembers() {
-        return memberService.getAllMembers();
+    public List<Member> getAllMembers(View view) {
+        try {
+            return memberService.getAllMembers();
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return List.of();
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return List.of();
+        }
     }
 
     public void newMemberView() {
@@ -68,13 +80,31 @@ public class MemberController {
         searchMemberView.showPopUp(stage, scene);
     }
 
-    public void searchMember(String searchText) {
-        List<Member> searchMembers = memberService.searchMembers(searchText);
-        memberView.populateTable(searchMembers);
+    public boolean searchMember(String searchText, View view) {
+        try {
+            List<Member> searchMembers = memberService.searchMembers(searchText);
+            memberView.populateTable(searchMembers);
+            return true;
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return false;
+        }
     }
 
-    public void newMember(String firstName, String lastName, String email, Level level) {
-        memberService.newMember(firstName, lastName, email, level);
+    public boolean newMember(String firstName, String lastName, String email, Level level, View view) {
+        try {
+            memberService.newMember(firstName, lastName, email, level);
+            return true;
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return false;
+        }
     }
 
     public void changeMemberView(Member member) {
@@ -82,16 +112,44 @@ public class MemberController {
         changeMemberView.showPopUp(stage, member);
     }
 
-    public void changeMember(Member member) {
-        memberService.changeMember(member);
+    public boolean changeMember(Member member, View view) {
+        try {
+             memberService.changeMember(member);
+             return true;
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return false;
+        }
     }
 
-    public void removeMember(Member member) {
-        memberService.removeMember(member);
+    public boolean removeMember(Member member, View view) {
+        try {
+            memberService.removeMember(member);
+            return true;
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return false;
+        }
     }
 
-    public void getHistoryView(Member member) {
-        historyView = new HistoryView();
-        historyView.showPopUp(stage, member);
+    public boolean getHistoryView(Member member, View view) {
+        try {
+            historyView = new HistoryView();
+            List<History> list = memberService.getHistory(member);
+            historyView.showPopUp(stage, member, list);
+            return true;
+        } catch (LjuslinException e) {
+            view.showInfoAlert(e.getMessage());
+            return false;
+        } catch (Exception e) {
+            view.showErrorAlert(e.getMessage());
+            return false;
+        }
     }
 }

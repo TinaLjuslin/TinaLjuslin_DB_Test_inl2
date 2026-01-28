@@ -1,20 +1,18 @@
 package com.ljuslin.app;
 
-import com.ljuslin.controller.ItemController;
+import com.ljuslin.controller.RentalObjectController;
 import com.ljuslin.controller.MemberController;
 import com.ljuslin.controller.RentalController;
+import com.ljuslin.controller.RevenueController;
 import com.ljuslin.repo.*;
 
-import com.ljuslin.service.ItemService;
+import com.ljuslin.service.RentalObjectService;
 import com.ljuslin.service.MemberService;
 import com.ljuslin.service.RentalService;
 import com.ljuslin.service.RevenueService;
 import com.ljuslin.util.HibernateUtil;
-import com.ljuslin.view.MainView;
-import com.ljuslin.view.ItemView;
-import com.ljuslin.view.MemberView;
+import com.ljuslin.view.*;
 
-import com.ljuslin.view.RentalView;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.hibernate.SessionFactory;
@@ -26,9 +24,9 @@ import org.hibernate.SessionFactory;
 public class WigellApplication extends Application {
     private MemberView memberView = new MemberView();
 
-    private ItemView itemView = new ItemView();
+    private RentalObjectView rentalObjectView = new RentalObjectView();
     private RentalView rentalView = new RentalView();
-//    private RevenueView revenueView = new RevenueView();
+    private RevenueView revenueView = new RevenueView();
 
     private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
     private BowtieRepositoryImpl bowtieRepository = new BowtieRepositoryImpl(sessionFactory);
@@ -39,22 +37,21 @@ public class WigellApplication extends Application {
     private HistoryRepositoryImpl historyRepository = new HistoryRepositoryImpl(sessionFactory);
     private RentalRepositoryImpl rentalRepo = new RentalRepositoryImpl(sessionFactory);
 
-    private ItemService itemService = new ItemService(bowtieRepository, pocketSquareRepository, tieRepository);
+    private RentalObjectService rentalObjectService = new RentalObjectService(bowtieRepository, pocketSquareRepository, tieRepository);
     private MemberService memberService = new MemberService(memberRepository, historyRepository);
-    private RentalService rentalService = new RentalService(rentalRepository);
-  //  private RevenueService revenueService = new RevenueService(rentalRepo);
+    private RentalService rentalService = new RentalService(rentalRepository, historyRepository, rentalObjectService);
+    private RevenueService revenueService = new RevenueService(rentalRepo);
 
     private MemberController memberController = new  MemberController(memberService,memberView);
 
-        private ItemController itemController = new ItemController(itemService, itemView);
+        private RentalObjectController rentalObjectController = new RentalObjectController(rentalObjectService, rentalObjectView);
         private RentalController rentalController = new RentalController(rentalService,
-                memberController, itemController, rentalView);
-   /*     private RevenueController revenueController = new RevenueController(revenueService,
-                memberController, itemController, revenueView);
-*//*
-    private MainView mainWiew = new MainView(memberController, itemController, rentalController,
+                memberController, rentalObjectController, rentalView);
+        private RevenueController revenueController = new RevenueController(revenueService,
+                memberController, rentalObjectController, revenueView);
+
+    private MainView mainWiew = new MainView(memberController, rentalObjectController, rentalController,
             revenueController);
-*/private MainView mainWiew = new MainView(memberController, itemController, rentalController);
 
     public WigellApplication() {
     }
@@ -62,12 +59,12 @@ public class WigellApplication extends Application {
     @Override
     public void start(Stage stage) {
         memberView.setMemberController(memberController);
-        //memberView.setRentalController(rentalController);
+        memberView.setRentalController(rentalController);
 
-        itemView.setItemController(itemController, rentalController);
-        rentalView.setRentalController(rentalController, itemController);
-        /*        revenueView.setRevenueController(revenueController);
-*/
+        rentalObjectView.setItemController(rentalObjectController, rentalController);
+        rentalView.setRentalController(rentalController, rentalObjectController);
+                revenueView.setRevenueController(revenueController);
+
         mainWiew.start(stage);
     }
 }

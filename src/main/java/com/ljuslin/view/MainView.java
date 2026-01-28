@@ -1,13 +1,14 @@
 package com.ljuslin.view;
 
 //import com.ljuslin.controller.ItemController;
-import com.ljuslin.controller.ItemController;
+import com.ljuslin.controller.RentalObjectController;
 import com.ljuslin.controller.MemberController;
 /*
 import com.ljuslin.controller.RentalController;
 import com.ljuslin.controller.RevenueController;
 */
 import com.ljuslin.controller.RentalController;
+import com.ljuslin.controller.RevenueController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -35,9 +36,9 @@ import javafx.util.Duration;
 public class MainView extends View{
     private final String TOP_HEADER = "Wigells uthyrning av accessoarer för gentlemän";
     private MemberController memberController;
-    private ItemController itemController;
+    private RentalObjectController rentalObjectController;
  private RentalController rentalController;
-//     private RevenueController revenueController;
+     private RevenueController revenueController;
 
     private Stage stage;
     private HBox topHBox;
@@ -56,30 +57,23 @@ public class MainView extends View{
     private Tab memberTab;
     private Tab itemTab;
     private Tab rentalTab;
-    //private Tab revenueTab;
+    private Tab revenueTab;
 
     private Timeline timeline;
     private long totalSeconds = 0;
 
     public MainView() {
     }
-    public MainView(MemberController memberController, ItemController itemController,
-                    RentalController rentalController){
-        this.memberController = memberController;
-        this.itemController = itemController;
-        this.rentalController = rentalController;
-    }
-    /*public MainView(MemberController memberController, ItemController itemController,
+
+    public MainView(MemberController memberController, RentalObjectController rentalObjectController,
                     RentalController rentalController, RevenueController revenueController) {
 
         this.memberController = memberController;
-        this.itemController = itemController;
+        this.rentalObjectController = rentalObjectController;
         this.rentalController = rentalController;
         this.revenueController = revenueController;
     }
-*/
     public void start(Stage stage) {
-        // Om du inte har controllers för dessa än, skapa tomma tabbar så länge:
         this.stage = stage;
         stage.initStyle(StageStyle.UNDECORATED);
         topLabel = new Label(TOP_HEADER);
@@ -122,12 +116,12 @@ public class MainView extends View{
         scene = new Scene(root, 1000, 600);
         memberTab = memberController.getTab();
         memberTab.setClosable(false);
-        itemTab = itemController.getTab();
+        itemTab = rentalObjectController.getTab();
         itemTab.setClosable(false);
         rentalTab = rentalController.getTab();
         rentalTab.setClosable(false);
-  //      revenueTab = revenueController.getTab();
-  //      revenueTab.setClosable(false);
+        revenueTab = revenueController.getTab();
+        revenueTab.setClosable(false);
 
         tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
@@ -140,18 +134,17 @@ public class MainView extends View{
         });
         String css = getClass().getResource("/greenStyles.css").toExternalForm();
         scene.getStylesheets().add(css);
-        //varför körs en select igen när nästa rad körs?
-        tabPane.getTabs().addAll(memberTab, itemTab, rentalTab);//, revenueTab);
+        tabPane.getTabs().addAll(memberTab, itemTab, rentalTab, revenueTab);
         stage.setScene(scene);
 
         memberController.setStage(stage);
-        itemController.setStage(stage);
+        rentalObjectController.setStage(stage);
         rentalController.setStage(stage);
-    //    revenueController.setStage(stage);
+        revenueController.setStage(stage);
         memberController.setScene(scene);
-        itemController.setScene(scene);
+        rentalObjectController.setScene(scene);
         rentalController.setScene(scene);
-    //    revenueController.setScene(scene);
+        revenueController.setScene(scene);
         stage.show();
     }
 
@@ -161,13 +154,13 @@ public class MainView extends View{
                 memberController.populateTable();
                 break;
             case "Varor":
-                itemController.populateTable();
+                rentalObjectController.populateTable();
                 break;
             case "Uthyrningar":
                 rentalController.populateTable();
                 break;
-      //      case "Ekonomi":
-      //          revenueController.populateTable();
+            case "Ekonomi":
+                revenueController.populateTable();
         }
     }
 

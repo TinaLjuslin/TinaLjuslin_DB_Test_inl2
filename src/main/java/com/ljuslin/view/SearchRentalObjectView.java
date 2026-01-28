@@ -1,7 +1,6 @@
 package com.ljuslin.view;
 
-import com.ljuslin.controller.ItemController;
-import com.ljuslin.entity.RentalType;
+import com.ljuslin.controller.RentalObjectController;
 import com.ljuslin.exception.DatabaseException;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,8 +15,8 @@ import javafx.stage.Stage;
  *
  * @author Tina Ljuslin
  */
-public class SearchItemView extends View {
-    private ItemController itemController;
+public class SearchRentalObjectView extends View {
+    private RentalObjectController rentalObjectController;
 
     private Stage searchItemStage;
     private Scene scene2;
@@ -27,15 +26,15 @@ public class SearchItemView extends View {
     private Button cancelButton;
     private GridPane gridPane;
 
-    public SearchItemView(ItemController itemController) {
-        this.itemController = itemController;
+    public SearchRentalObjectView(RentalObjectController rentalObjectController) {
+        this.rentalObjectController = rentalObjectController;
     }
 
-    public void showPopUp(Stage mainStage, Scene mainScene, RentalType type) {
+    public void showPopUp(Stage mainStage, Scene mainScene) {
         searchItemStage = new Stage();
         searchButton = new Button("Sök");
         cancelButton = new Button("Avbryt");
-        searchLabel = new Label("Sök " + type.getSwedishName() + ":");
+        searchLabel = new Label("Sök ");
         searchField = new TextField();
         gridPane = new GridPane();
         gridPane.add(searchLabel, 0, 0);
@@ -47,14 +46,10 @@ public class SearchItemView extends View {
         scene2.getStylesheets().add(css);
 
         searchButton.setOnAction(ae -> {
-            try {
-                itemController.searchItem(type, searchField.getText());
-                searchItemStage.close();
-            } catch (DatabaseException e) {
-                showInfoAlert(e.getMessage());
-            } catch (Exception e) {
-                showErrorAlert(e.getMessage());
-            }
+
+            rentalObjectController.searchRentalObject(searchField.getText(), this);
+            searchItemStage.close();
+
         });
         cancelButton.setOnAction(ae -> {
             searchItemStage.close();

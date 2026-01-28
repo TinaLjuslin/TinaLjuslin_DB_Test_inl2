@@ -46,14 +46,11 @@ public class SearchMemberView extends View {
         scene2.getStylesheets().add(css);
 
         searchButton.setOnAction(ae -> {
-            try {
-                memberController.searchMember(searchField.getText());
+
+            if (memberController.searchMember(searchField.getText(), this)) {
                 searchMemberStage.close();
-            } catch (DatabaseException e) {
-                showInfoAlert(e.getMessage());
-            } catch (Exception e) {
-                showErrorAlert(e.getMessage());
             }
+
         });
         cancelButton.setOnAction(ae -> {
             searchMemberStage.close();

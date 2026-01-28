@@ -269,6 +269,9 @@
     -fx-text-fill: -color-text;
     -fx-font-weight: bold;
 }
+.table-view .table-cell {
+    -fx-text-fill: -color-text;
+}
 
 .table-row-cell {
     -fx-background-color: -color-foreground;

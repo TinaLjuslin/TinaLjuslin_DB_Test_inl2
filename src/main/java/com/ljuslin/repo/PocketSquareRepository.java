@@ -16,4 +16,5 @@ public interface PocketSquareRepository {
     //void deleteById(Long id);
     List<PocketSquare> getByMaterial(Material material);
     List<PocketSquare> search(String searchText);
+    List<PocketSquare> getAllAvailable();
 }
